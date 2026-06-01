@@ -53,3 +53,15 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+.idea/
+cmake-build-debug/
+cmake-build-release/
+*.iws
+*.iml
+*.ipr
