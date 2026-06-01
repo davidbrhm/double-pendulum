@@ -65,3 +65,5 @@ cmake-build-release/
 *.iws
 *.iml
 *.ipr
+
+notes.md

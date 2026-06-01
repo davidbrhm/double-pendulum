@@ -9,6 +9,10 @@ include_directories(include)
 
 file(GLOB_RECURSE SOURCES "src/*.c")
 
-add_executable(double_pendulum ${SOURCES})
+add_executable(double_pendulum ${SOURCES}
+        include/ui.h
+        src/ui.c
+        include/constants.h
+)
 
 target_link_libraries(double_pendulum PRIVATE raylib)
