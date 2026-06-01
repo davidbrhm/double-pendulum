@@ -13,6 +13,10 @@ add_executable(double_pendulum ${SOURCES}
         include/ui.h
         src/ui.c
         include/constants.h
+        include/physics.h
+        src/physics.c
+        src/render.c
+        include/render.h
 )
 
 target_link_libraries(double_pendulum PRIVATE raylib)
