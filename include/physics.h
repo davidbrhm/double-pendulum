@@ -19,7 +19,11 @@ typedef struct DoublePendulum {
 
 DoublePendulum *create_pendulum(void);
 
+void display_pendulum(DoublePendulum *p, int origin_x, int origin_y);
+
 void update_pendulum(DoublePendulum *p, float dt);
+
+void randomize_pendulum(DoublePendulum *p);
 
 void destroy_pendulum(DoublePendulum *p);
 

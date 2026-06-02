@@ -1,7 +1,7 @@
 #ifndef DOUBLE_PENDULUM_UI_H
 #define DOUBLE_PENDULUM_UI_H
 
-typedef enum {
+typedef enum AppScreen {
     SCREEN_MENU,
     SCREEN_LABORATORY,
     SCREEN_BUTTERFLY_EFFECT,

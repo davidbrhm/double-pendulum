@@ -2,7 +2,7 @@
 #define DOUBLE_PENDULUM_ERROR_H
 #include <stdbool.h>
 
-typedef enum {
+typedef enum ErrorCode {
     ERR_SUCCESS = 0,
     ERR_NULL_POINTER,
     ERR_ALLOCATION_FAILED,

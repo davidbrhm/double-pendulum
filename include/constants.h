@@ -16,10 +16,13 @@
 
 #define GOLDEN_RATIO 1.6180339887f
 
-#define GRAVITY 9.81f
 #define BASE_LENGTH 150.0f
 #define BASE_MASS 9.0f
 #define TRAIL_MAX_LENGTH 200
 #define ARM_THICKNESS 9
+
+#define PIXELS_PER_METER 150.0f // same as base_length
+#define GRAVITY (9.81f * PIXELS_PER_METER)
+
 
 #endif //DOUBLE_PENDULUM_CONSTANTS_H
