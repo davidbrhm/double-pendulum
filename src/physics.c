@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "physics.h"
 #include "constants.h"
+#include "error.h"
 
 #include <stdlib.h>
 
@@ -8,7 +9,7 @@
 DoublePendulum *create_pendulum(void) {
     DoublePendulum *p = calloc(1, sizeof(DoublePendulum));
     if (!p) {
-        // TODO: handle memory allocation error
+        log_error(ERR_ALLOCATION_FAILED, "create_pendulum", true);
         return NULL;
     }
 
@@ -37,5 +38,6 @@ void update_pendulum(DoublePendulum *p, float dt) {
 }
 
 void destroy_pendulum(DoublePendulum *p) {
+    // TODO: null pointer check
     free(p);
 }

@@ -17,6 +17,8 @@ add_executable(double_pendulum ${SOURCES}
         src/physics.c
         src/render.c
         include/render.h
+        src/error.c
+        include/error.h
 )
 
 target_link_libraries(double_pendulum PRIVATE raylib)
