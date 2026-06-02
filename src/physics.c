@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include "physics.h"
 #include "constants.h"
-#include "error.h"
+#include "logger.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -9,7 +9,7 @@
 DoublePendulum *create_pendulum(void) {
     DoublePendulum *p = calloc(1, sizeof(DoublePendulum));
     if (!p) {
-        log_error(ERR_ALLOCATION_FAILED, "create_pendulum", true);
+        LOG_FATAL("[SYS] Memory allocation failed -> Target: DoublePendulum struct in create_pendulum()");
         return NULL;
     }
 
@@ -132,13 +132,12 @@ void randomize_pendulum(DoublePendulum *p) {
     p->theta2 = (GetRandomValue(0, 360) * PI) / 180.0f;
     p->omega1 = p->omega2 = 0.f;
 
-    TraceLog(LOG_INFO, "INPUT: R pressed, pendulum randomized. Theta1: %.2f rad, Theta2: %.2f rad",
-             p->theta1, p->theta2);
+    LOG_INFO("[INPUT] Key 'R' pressed -> Pendulum randomized (T1: %.2f, T2: %.2f)", p->theta1, p->theta2);
 }
 
 void destroy_pendulum(DoublePendulum *p) {
     if (!p) {
-        log_error(ERR_NULL_POINTER, "destroy_pendulum() - p is NULL", false);
+        LOG_ERROR("[SYS] Null pointer exception -> Pendulum pointer 'p' is NULL in destroy_pendulum()");
         return;
     }
 

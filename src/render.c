@@ -1,14 +1,14 @@
 #include "render.h"
 #include "constants.h"
 #include "raylib.h"
-#include "error.h"
+#include "logger.h"
 
 #include <math.h>
 
 
 void draw_pendulum(DoublePendulum *p, int origin_x, int origin_y) {
     if (!p) {
-        log_error(ERR_NULL_POINTER, "draw_pendulum() - p is NULL", false);
+        LOG_ERROR("[RENDER] Null pointer exception -> Pendulum pointer 'p' is NULL in draw_pendulum()");
         return;
     }
 

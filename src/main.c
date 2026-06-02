@@ -3,10 +3,15 @@
 #include "raylib.h"
 #include "ui.h"
 #include "constants.h"
+#include "logger.h"
 #include "physics.h"
 #include "render.h"
 
 int main(void) {
+#ifndef NDEBUG
+    init_logger();
+#endif
+
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Double Pendulum");
@@ -24,18 +29,16 @@ int main(void) {
         if (current_screen == SCREEN_LABORATORY) {
             if (IsKeyPressed(KEY_SPACE)) {
                 lab_pendulum->is_paused = !lab_pendulum->is_paused;
-                TraceLog(LOG_INFO, "SPACE PRESSED. PAUSED STATE: %d", lab_pendulum->is_paused);
+                LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", lab_pendulum->is_paused);
             }
 
             if (IsKeyPressed(KEY_R)) {
                 randomize_pendulum(lab_pendulum);
-                // TraceLog(LOG_INFO, "INPUT: R pressed, randomizing pendulum angles."); // display_pendulum
             }
 
             float dt = GetFrameTime();
             update_pendulum(lab_pendulum, dt);
         }
-
 
 
         // drawing section
@@ -57,5 +60,9 @@ int main(void) {
 
     destroy_pendulum(lab_pendulum);
     CloseWindow();
+
+#ifndef NDEBUG
+    close_logger();
+#endif
     return 0;
 }
