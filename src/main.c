@@ -36,6 +36,11 @@ int main(void) {
                 randomize_pendulum(lab_pendulum);
             }
 
+            if (IsKeyPressed(KEY_T)) {
+                lab_pendulum->show_trail = !lab_pendulum->show_trail;
+                LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", lab_pendulum->show_trail);
+            }
+
             float dt = GetFrameTime();
             update_pendulum(lab_pendulum, dt);
         }

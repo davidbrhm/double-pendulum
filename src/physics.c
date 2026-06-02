@@ -1,6 +1,4 @@
-#include "raylib.h"
 #include "physics.h"
-#include "constants.h"
 #include "logger.h"
 
 #include <stdlib.h>
@@ -27,6 +25,7 @@ DoublePendulum *create_pendulum(void) {
 
     p->is_paused = true;
     p->show_trail = false;
+    p->trail_count = 0;
 
     return p;
 }
@@ -123,6 +122,28 @@ void update_pendulum(DoublePendulum *p, float dt) {
     p->theta2 += (k1_t2 + 2.0f * k2_t2 + 2.0f * k3_t2 + k4_t2) / 6.0f;
     p->omega1 += (k1_w1 + 2.0f * k2_w1 + 2.0f * k3_w1 + k4_w1) / 6.0f;
     p->omega2 += (k1_w2 + 2.0f * k2_w2 + 2.0f * k3_w2 + k4_w2) / 6.0f;
+
+
+    // Update trial
+    if (p->show_trail) {
+        float x1 = p->l1 * sinf(p->theta1);
+        float y1 = p->l1 * cosf(p->theta1);
+        float x2 = x1 + p->l2 * sinf(p->theta2);
+        float y2 = y1 + p->l2 * cosf(p->theta2);
+
+        Vector2 current_pos = {x2, y2};
+
+        int max_shift = (p->trail_count < TRAIL_MAX_LENGTH) ? p->trail_count : TRAIL_MAX_LENGTH - 1;
+        for (int i = max_shift; i > 0; i--) {
+            p->trail[i] = p->trail[i - 1];
+        }
+
+        p->trail[0] = current_pos;
+
+        if (p->trail_count < TRAIL_MAX_LENGTH) {
+            p->trail_count++;
+        }
+    }
 }
 
 void randomize_pendulum(DoublePendulum *p) {
@@ -131,6 +152,7 @@ void randomize_pendulum(DoublePendulum *p) {
     p->theta1 = (GetRandomValue(0, 360) * PI) / 180.0f;
     p->theta2 = (GetRandomValue(0, 360) * PI) / 180.0f;
     p->omega1 = p->omega2 = 0.f;
+    p->trail_count = 0;
 
     LOG_INFO("[INPUT] Key 'R' pressed -> Pendulum randomized (T1: %.2f, T2: %.2f)", p->theta1, p->theta2);
 }

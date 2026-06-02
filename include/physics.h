@@ -2,6 +2,9 @@
 #define DOUBLE_PENDULUM_PHYSICS_H
 #include <stdbool.h>
 
+#include "raylib.h"
+#include "constants.h"
+
 typedef struct DoublePendulum {
     float l1, l2;
     float m1, m2;
@@ -13,7 +16,8 @@ typedef struct DoublePendulum {
     bool is_paused;
     bool show_trail;
 
-    // TODO: trail buffer array
+    Vector2 trail[TRAIL_MAX_LENGTH];
+    int trail_count;
 } DoublePendulum;
 
 

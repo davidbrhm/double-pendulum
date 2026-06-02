@@ -12,6 +12,20 @@ void draw_pendulum(DoublePendulum *p, int origin_x, int origin_y) {
         return;
     }
 
+    if (p->show_trail && p->trail_count > 1) {
+        for (int i = 0; i < p->trail_count - 1; i++) {
+            float alpha = 1.0f - ((float) i / (float) p->trail_count);
+
+            Color trail_color = Fade(LIME, alpha);
+
+            DrawLineV(
+                (Vector2){p->trail[i].x + origin_x, p->trail[i].y + origin_y},
+                (Vector2){p->trail[i + 1].x + origin_x, p->trail[i + 1].y + origin_y},
+                trail_color
+            );
+        }
+    }
+
     float x0 = (float) origin_x;
     float y0 = (float) origin_y;
 
