@@ -12,13 +12,13 @@ int main(void) {
     init_logger();
 #endif
 
-    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
+    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI | FLAG_WINDOW_RESIZABLE);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Double Pendulum");
     SetTargetFPS(TARGET_FPS);
     SetExitKey(KEY_ENTER); // KEY_NULL - release, KEY_ENTER - dev
 
-    init_ui();
+    init_ui_theme();
 
     DoublePendulum *lab_pendulum = create_pendulum();
     AppScreen current_screen = SCREEN_MENU;
@@ -26,7 +26,7 @@ int main(void) {
     while (!WindowShouldClose()) {
         current_screen = update_ui(current_screen);
 
-        if (current_screen == SCREEN_LABORATORY) {
+        if (current_screen == CORE_SIMULATION) {
             if (IsKeyPressed(KEY_SPACE)) {
                 lab_pendulum->is_paused = !lab_pendulum->is_paused;
                 LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", lab_pendulum->is_paused);
@@ -53,8 +53,8 @@ int main(void) {
         draw_ui(current_screen);
 
         switch (current_screen) {
-            case SCREEN_LABORATORY:
-                draw_pendulum(lab_pendulum, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+            case CORE_SIMULATION:
+                draw_pendulum(lab_pendulum, GetScreenWidth() / 2, GetScreenHeight() / 2);
                 break;
             default:
                 break;
@@ -64,6 +64,7 @@ int main(void) {
     }
 
     destroy_pendulum(lab_pendulum);
+    unload_ui_theme();
     CloseWindow();
 
 #ifndef NDEBUG

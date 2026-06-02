@@ -147,7 +147,10 @@ void update_pendulum(DoublePendulum *p, float dt) {
 }
 
 void randomize_pendulum(DoublePendulum *p) {
-    if (!p) return;
+    if (!p) {
+        LOG_ERROR("[SYS] Null pointer exception -> Pendulum pointer 'p' is NULL in randomize_pendulum()");
+        return;
+    }
 
     p->theta1 = (GetRandomValue(0, 360) * PI) / 180.0f;
     p->theta2 = (GetRandomValue(0, 360) * PI) / 180.0f;

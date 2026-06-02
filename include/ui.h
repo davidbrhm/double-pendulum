@@ -3,14 +3,16 @@
 
 typedef enum AppScreen {
     SCREEN_MENU,
-    SCREEN_LABORATORY,
+    CORE_SIMULATION,
     SCREEN_BUTTERFLY_EFFECT,
     SCREEN_2D_FRACTAL,
     SCREEN_3D_SPACE,
     SCREEN_SETTINGS
 } AppScreen;
 
-void init_ui(void);
+void init_ui_theme(void);
+
+void unload_ui_theme(void);
 
 AppScreen update_ui(AppScreen current_screen);
 

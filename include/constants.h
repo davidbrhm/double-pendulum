@@ -25,4 +25,15 @@
 #define GRAVITY (9.81f * PIXELS_PER_METER)
 
 
+// UI
+#define FONT_BASE       16.0f
+#define FONT_MENU       26.0f
+#define FONT_HEADER     42.0f
+#define FONT_TITLE      68.0f
+
+#define THEME_BG GetColor(0x0A0A0AFF)
+#define THEME_FG GetColor(0xEDEDEDFF)
+#define THEME_FG_DIM GetColor(0x888888FF)
+#define THEME_ACCENT GetColor(0x00E5FFFF)
+
 #endif //DOUBLE_PENDULUM_CONSTANTS_H
