@@ -1,5 +1,8 @@
 #ifndef DOUBLE_PENDULUM_UI_H
 #define DOUBLE_PENDULUM_UI_H
+#include <stdbool.h>
+
+#include "physics.h"
 
 typedef enum AppScreen {
     SCREEN_MENU,
@@ -10,12 +13,24 @@ typedef enum AppScreen {
     SCREEN_SETTINGS
 } AppScreen;
 
+typedef struct AppState {
+    AppScreen current_screen;
+    bool hide_controls;
+
+    DoublePendulum *lab_pendulum;
+} AppState;
+
+AppState *init_state(DoublePendulum *lp);
+
+void destroy_state(AppState *state);
+
 void init_ui_theme(void);
 
 void unload_ui_theme(void);
 
-AppScreen update_ui(AppScreen current_screen);
+void update_ui(AppState *state);
 
-void draw_ui(AppScreen current_screen);
+
+void draw_ui(AppState *state);
 
 #endif //DOUBLE_PENDULUM_UI_H

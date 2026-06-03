@@ -146,7 +146,7 @@ void update_pendulum(DoublePendulum *p, float dt) {
     }
 }
 
-void randomize_pendulum(DoublePendulum *p) {
+void randomize_pendulum(DoublePendulum *p) { // (T1: 3.42, T2: 2.44)
     if (!p) {
         LOG_ERROR("[SYS] Null pointer exception -> Pendulum pointer 'p' is NULL in randomize_pendulum()");
         return;

@@ -13,7 +13,6 @@ int main(void) {
 #endif
 
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI | FLAG_WINDOW_RESIZABLE);
-
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Double Pendulum");
     SetTargetFPS(TARGET_FPS);
     SetExitKey(KEY_ENTER); // KEY_NULL - release, KEY_ENTER - dev
@@ -21,36 +20,24 @@ int main(void) {
     init_ui_theme();
 
     DoublePendulum *lab_pendulum = create_pendulum();
-    AppScreen current_screen = SCREEN_MENU;
+    AppState *app_state = init_state(lab_pendulum);
 
     while (!WindowShouldClose()) {
-        current_screen = update_ui(current_screen);
+        update_ui(app_state);
+        AppScreen current_screen = app_state->current_screen;
+
+        float dt = GetFrameTime();
+        if (dt > 0.1f) dt = 1.0f / 60.0f;
 
         if (current_screen == CORE_SIMULATION) {
-            if (IsKeyPressed(KEY_SPACE)) {
-                lab_pendulum->is_paused = !lab_pendulum->is_paused;
-                LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", lab_pendulum->is_paused);
-            }
-
-            if (IsKeyPressed(KEY_R)) {
-                randomize_pendulum(lab_pendulum);
-            }
-
-            if (IsKeyPressed(KEY_T)) {
-                lab_pendulum->show_trail = !lab_pendulum->show_trail;
-                LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", lab_pendulum->show_trail);
-            }
-
-            float dt = GetFrameTime();
             update_pendulum(lab_pendulum, dt);
         }
-
 
         // drawing section
         BeginDrawing();
 
         ClearBackground(BLACK);
-        draw_ui(current_screen);
+        draw_ui(app_state);
 
         switch (current_screen) {
             case CORE_SIMULATION:
