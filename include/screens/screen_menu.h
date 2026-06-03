@@ -3,7 +3,7 @@
 
 #include "ui.h"
 
-void update_screen_menu(AppState *state, int key);
+void update_screen_menu(AppState *state);
 void draw_screen_menu(AppState *state);
 
 #endif //DOUBLE_PENDULUM_SCREEN_MENU_H

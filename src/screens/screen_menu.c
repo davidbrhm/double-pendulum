@@ -5,8 +5,8 @@
 extern Font global_font_ui;
 extern Font global_font_hud;
 
-void update_screen_menu(AppState *state, int key) {
-    switch (key) {
+void update_screen_menu(AppState *state) {
+    switch (state->current_key) {
         case KEY_ONE:
             state->current_screen = CORE_SIMULATION;
             return;

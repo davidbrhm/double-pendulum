@@ -6,10 +6,10 @@
 extern Font global_font_ui;
 extern Font global_font_hud;
 
-void update_screen_core_sim(AppState *state, int key) {
+void update_screen_core_sim(AppState *state) {
     if (!state->lab_pendulum) return;
 
-    switch (key) {
+    switch (state->current_key) {
         case KEY_SPACE:
             state->lab_pendulum->is_paused = !state->lab_pendulum->is_paused;
             LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->lab_pendulum->is_paused);
@@ -50,7 +50,7 @@ void draw_screen_core_sim(AppState *state) {
     const float dt_w = MeasureTextEx(global_font_hud, dt_text, base_size * 0.8f, 1.0f).x;
 
     DrawTextEx(global_font_hud, fps_text, (Vector2){screen_w - fps_w - pad, pad}, base_size * 0.8f, 1.0f,
-               THEME_ACCENT);
+               THEME_FG);
     DrawTextEx(global_font_hud, dt_text, (Vector2){screen_w - dt_w - pad, pad + line_spacing}, base_size * 0.8f, 1.0f,
                THEME_FG_DIM);
 

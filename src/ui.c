@@ -61,10 +61,10 @@ void update_ui(AppState *state) {
         LOG_FATAL("[SYS] Null pointer exception -> State pointer 'p' is NULL in update_ui()");
         return;
     }
-    
-    const int key = GetKeyPressed();
 
-    switch (key) {
+    state->current_key = GetKeyPressed();
+
+    switch (state->current_key) {
         case 0:
             return;
         case KEY_ESCAPE: state->current_screen = SCREEN_MENU;
@@ -72,9 +72,9 @@ void update_ui(AppState *state) {
     }
 
     switch (state->current_screen) {
-        case SCREEN_MENU: update_screen_menu(state, key);
+        case SCREEN_MENU: update_screen_menu(state);
             break;
-        case CORE_SIMULATION: update_screen_core_sim(state, key);
+        case CORE_SIMULATION: update_screen_core_sim(state);
             break;
         default: break;
     }
