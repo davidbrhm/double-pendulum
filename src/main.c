@@ -27,9 +27,9 @@ int main(void) {
         AppScreen current_screen = app_state->current_screen;
 
         float dt = GetFrameTime();
-        if (dt > 0.1f) dt = 1.0f / 60.0f;
+        if (dt > 0.1f) dt = 1.0f / TARGET_FPS;
 
-        if (current_screen == CORE_SIMULATION) {
+        if (current_screen == CORE_SIMULATION && !lab_pendulum->is_paused) {
             update_pendulum(lab_pendulum, dt);
         }
 

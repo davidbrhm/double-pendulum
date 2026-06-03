@@ -11,14 +11,13 @@ file(GLOB_RECURSE SOURCES "src/*.c")
 
 add_executable(double_pendulum ${SOURCES}
         include/ui.h
-        src/ui.c
         include/constants.h
         include/physics.h
-        src/physics.c
-        src/render.c
         include/render.h
-        src/logger.c
         include/logger.h
+        include/screens/screen_menu.h
+        include/screens/screen_core_sim.h
+        include/screens/screen_settings.h
 )
 
 target_link_libraries(double_pendulum PRIVATE raylib)
