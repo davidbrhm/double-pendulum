@@ -7,6 +7,8 @@
 
 #include <stdlib.h>
 
+#include "screens/screen_butterfly_effect.h"
+
 Font global_font_ui;
 Font global_font_hud;
 
@@ -76,6 +78,9 @@ void update_ui(AppState *state) {
             break;
         case CORE_SIMULATION: update_screen_core_sim(state);
             break;
+        case SCREEN_BUTTERFLY_EFFECT:
+            update_screen_butterfly_effect(state);
+            break;
         default: break;
     }
 }
@@ -87,6 +92,9 @@ void draw_ui(AppState *state) {
         case SCREEN_MENU: draw_screen_menu(state);
             break;
         case CORE_SIMULATION: draw_screen_core_sim(state);
+            break;
+        case SCREEN_BUTTERFLY_EFFECT:
+            draw_screen_butterfly_effect(state);
             break;
         default: break;
     }

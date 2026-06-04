@@ -39,7 +39,7 @@ void draw_screen_core_sim(AppState *state) {
     const float line_spacing = base_size * 1.5f;
 
     // title
-    // DrawTextEx(font_ui, "CORE SIMULATION", (Vector2){pad, pad}, base_size, 2.0f, THEME_FG);
+    DrawTextEx(global_font_ui, "CORE SIMULATION", (Vector2){pad, pad}, base_size, 2.0f, THEME_FG);
 
     // performance
     const float frame_ms = GetFrameTime() * 1000.0f;
