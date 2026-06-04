@@ -10,7 +10,6 @@ void update_screen_menu(AppState *state) {
         case KEY_ONE:
             state->current_screen = CORE_SIMULATION;
             return;
-
         case KEY_TWO:
             state->current_screen = SCREEN_BUTTERFLY_EFFECT;
             return;

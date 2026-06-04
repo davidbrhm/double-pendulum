@@ -31,6 +31,8 @@ int main(void) {
 
         if (current_screen == CORE_SIMULATION && !lab_pendulum->is_paused) {
             update_pendulum(lab_pendulum, dt);
+        } else if (app_state->current_screen == SCREEN_BUTTERFLY_EFFECT) {
+            update_butterfly_effect(app_state->butterfly_effect, dt);
         }
 
         // drawing section
@@ -42,6 +44,8 @@ int main(void) {
         switch (current_screen) {
             case CORE_SIMULATION:
                 draw_pendulum(lab_pendulum, GetScreenWidth() / 2, GetScreenHeight() / 2);
+                break;
+            case SCREEN_BUTTERFLY_EFFECT:
                 break;
             default:
                 break;

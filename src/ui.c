@@ -4,10 +4,10 @@
 
 #include "screens/screen_menu.h"
 #include "screens/screen_core_sim.h"
+#include "screens/screen_butterfly_effect.h"
 
 #include <stdlib.h>
 
-#include "screens/screen_butterfly_effect.h"
 
 Font global_font_ui;
 Font global_font_hud;
@@ -49,6 +49,7 @@ AppState *init_state(DoublePendulum *lp) {
     s->current_screen = SCREEN_MENU;
     s->hide_controls = false;
     s->lab_pendulum = lp;
+    s->butterfly_effect = create_butterfly_effect();
 
     return s;
 }

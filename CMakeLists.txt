@@ -20,6 +20,8 @@ add_executable(double_pendulum ${SOURCES}
         include/screens/screen_settings.h
         src/screens/screen_butterfly_effect.c
         include/screens/screen_butterfly_effect.h
+        src/butterfly_effect.c
+        include/butterfly_effect.h
 )
 
 target_link_libraries(double_pendulum PRIVATE raylib)

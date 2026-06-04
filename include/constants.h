@@ -36,4 +36,8 @@
 #define THEME_FG_DIM GetColor(0x888888FF)
 #define THEME_ACCENT GetColor(0x00E5FFFF)
 
+// CAMERA
+#define CAMERA_RADIUS 400.0f
+#define GAP (-9.0f)
+
 #endif //DOUBLE_PENDULUM_CONSTANTS_H

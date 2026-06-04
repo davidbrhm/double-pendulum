@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "physics.h"
+#include "butterfly_effect.h"
 
 typedef enum AppScreen {
     SCREEN_MENU,
@@ -18,6 +19,7 @@ typedef struct AppState {
     bool hide_controls;
     int current_key;
     DoublePendulum *lab_pendulum;
+    ButterflyEffect *butterfly_effect;
 } AppState;
 
 AppState *init_state(DoublePendulum *lp);
