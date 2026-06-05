@@ -3,8 +3,10 @@
 
 #include "raylib.h"
 #include "physics.h"
+#include "constants.h"
 
-#define SWARM_SIZE 10
+#define SWARM_SIZE 200
+#define GAP (-4.0 * GOLDEN_RATIO)
 
 typedef struct ButterflyEffect {
     DoublePendulum *pendulums;

@@ -1,4 +1,5 @@
 #include "screens/screen_butterfly_effect.h"
+#include "butterfly_effect.h"
 #include "raylib.h"
 #include "constants.h"
 #include "logger.h"
@@ -13,14 +14,19 @@ void update_screen_butterfly_effect(AppState *state) {
 
     ButterflyEffect *bf = state->butterfly_effect;
 
-    if (IsKeyDown(KEY_D)) bf->camera_angle += 0.05f;
-    if (IsKeyDown(KEY_A)) bf->camera_angle -= 0.05f;
+    if (IsKeyDown(KEY_D)) bf->camera_angle += 0.02f;
+    if (IsKeyDown(KEY_A)) bf->camera_angle -= 0.02f;
 
+    // TODO: camera state
     float center_z = ((SWARM_SIZE - 1) * GAP) / 2.0f;
-    bf->camera.position.x = sinf(bf->camera_angle) * CAMERA_RADIUS;
-    bf->camera.position.z = center_z + (cosf(bf->camera_angle) * CAMERA_RADIUS);
+    float total_length = fabsf((SWARM_SIZE - 1) * GAP);
+    float dynamic_radius = 600.0f + (total_length * 0.5f); // const
 
-    bf->camera.target = (Vector3){0.0f, 0.0f, center_z};
+    bf->camera.position.x = sinf(bf->camera_angle) * dynamic_radius;
+    bf->camera.position.y = 0;
+    bf->camera.position.z = center_z + (cosf(bf->camera_angle) * dynamic_radius);
+
+    bf->camera.target = (Vector3){0.0f, -150.0f, center_z};
 
     switch (state->current_key) {
         case KEY_SPACE:
@@ -34,7 +40,11 @@ void update_screen_butterfly_effect(AppState *state) {
             break;
         case KEY_H:
             state->hide_controls = !state->hide_controls;
-            LOG_INFO("H -> hide");
+            LOG_INFO("H -> hide HUD");
+            break;
+        case KEY_C:
+            bf->camera_angle = 0;
+            LOG_INFO("C -> camera center");
             break;
         default: break;
     }

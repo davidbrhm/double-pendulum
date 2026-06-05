@@ -1,5 +1,6 @@
 #include "butterfly_effect.h"
 #include "logger.h"
+#include "rlgl.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -9,37 +10,39 @@
 
 ButterflyEffect *create_butterfly_effect(void) {
     ButterflyEffect *effect = calloc(1, sizeof(ButterflyEffect));
-    if (!effect) {
-        LOG_FATAL("[SYS] Memory allocation failed -> Target: ButterflyEffect struct in create_butterfly_effect()");
-        return NULL;
-    }
+    if (!effect) return NULL;
 
     effect->pendulums = malloc(SWARM_SIZE * sizeof(DoublePendulum));
-    if (!effect->pendulums) {
-        LOG_FATAL("[SYS] Memory allocation failed -> Target: DoublePendulum struct in create_butterfly_effect()");
-        return NULL;
-    }
+    if (!effect->pendulums) return NULL;
 
     effect->is_paused = false;
     effect->camera_angle = 0.0f;
 
+    // dynamic camera
     float center_z = ((SWARM_SIZE - 1) * GAP) / 2.0f;
-    effect->camera.position = (Vector3){0.0f, 0.0f, center_z + CAMERA_RADIUS};
-    effect->camera.target = (Vector3){0.0f, 0.0f, center_z};
+    float total_length = fabsf((SWARM_SIZE - 1) * GAP);
+    float dynamic_radius = 600.0f + (total_length * 0.5f);
+
+    effect->camera.position = (Vector3){0.0f, 0, center_z + dynamic_radius};
+    effect->camera.target = (Vector3){0.0f, -150.0f, center_z};
     effect->camera.up = (Vector3){0.0f, 1.0f, 0.0f};
-    effect->camera.fovy = 30.0f;
+    effect->camera.fovy = 45.0f;
     effect->camera.projection = CAMERA_PERSPECTIVE;
 
+    const float t1 = (GetRandomValue(0, 360) * PI) / 180.0f;
+    const float t2 = (GetRandomValue(0, 360) * PI) / 180.0f;
     for (int i = 0; i < SWARM_SIZE; i++) {
-        effect->pendulums[i].l1 = 30.0f;
-        effect->pendulums[i].l2 = 30.0f;
+        effect->pendulums[i].l1 = 150.0f;
+        effect->pendulums[i].l2 = 150.0f;
         effect->pendulums[i].m1 = 10.0f;
         effect->pendulums[i].m2 = 10.0f;
-
         effect->pendulums[i].g = GRAVITY;
 
-        effect->pendulums[i].theta1 = (PI / 2.0f) + (i * DIFFERENCE);
-        effect->pendulums[i].theta2 = PI / 2.0f;
+        //effect->pendulums[i].theta1 = (PI / 2.0f) + (i * DIFFERENCE);
+        //effect->pendulums[i].theta2 = PI / 2.0f;
+        effect->pendulums[i].theta1 = t1 + (i * DIFFERENCE);
+        effect->pendulums[i].theta2 = t2;
+
         effect->pendulums[i].omega1 = 0.0f;
         effect->pendulums[i].omega2 = 0.0f;
 
@@ -60,6 +63,7 @@ void update_butterfly_effect(ButterflyEffect *effect, float dt) {
 
 void draw_butterfly_effect(const ButterflyEffect *effect) {
     if (!effect) return;
+    rlSetClipPlanes(0.01, 10000.0); // const !
 
     BeginMode3D(effect->camera);
     Vector3 main_origin = {0.0f, 0.0f, 0.0f};
@@ -84,17 +88,16 @@ void draw_butterfly_effect(const ButterflyEffect *effect) {
         };
 
         Color color = ColorFromHSV((float) i / SWARM_SIZE * 120.0f + 140.0f, 0.8f, 0.9f);
-        color.a = 200;
+        color.a = 255;
 
-        DrawCylinderEx(current_origin, p1, 3.0f, 3.0f, 8, color);
-        DrawCylinderEx(p1, p2, 3.0f, 3.0f, 8, color);
+        DrawCylinderEx(current_origin, p1, 4.0f, 4.0f, 8, color);
+        DrawCylinderEx(p1, p2, 4.0f, 4.0f, 8, color);
 
         DrawSphere(current_origin, 4.0f, color);
-        DrawSphere(p1, 6.0f, color);
+        DrawSphere(p1, 6.0f, color); // const radius
         DrawSphere(p2, 6.0f, color);
     }
 
-    DrawGrid(20, 50.0f);
     EndMode3D();
 }
 

@@ -68,8 +68,6 @@ void update_ui(AppState *state) {
     state->current_key = GetKeyPressed();
 
     switch (state->current_key) {
-        case 0:
-            return;
         case KEY_ESCAPE: state->current_screen = SCREEN_MENU;
             return;
     }
