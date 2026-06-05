@@ -7,7 +7,7 @@
 
 // simulation constants
 #define BF_SWARM_SIZE 200
-#define BF_GAP (-4.0f * GOLDEN_RATIO)
+#define BF_GAP (-3.5f * GOLDEN_RATIO)
 #define BF_DIFFERENCE 0.0001f
 
 // render constants
@@ -17,7 +17,7 @@
 #define BF_COLOR_HUE_RANGE 120.0f
 #define BF_COLOR_HUE_OFFSET 140.0f
 
-// camera constants 
+// camera constants
 #define BF_CAM_BASE_DIST 600.0f
 #define BF_CAM_LENGTH_MULT 0.5f
 #define BF_CAM_Y_OFFSET (-50.0f)
@@ -31,12 +31,11 @@ typedef struct ButterflyEffect {
     DoublePendulum *pendulums;
     Camera3D camera;
     float camera_angle;
-    bool is_paused;
-} ButterflyEffect;
+} ButterflyEffect; // TODO: FPS + center
 
 ButterflyEffect *create_butterfly_effect(void);
 
-void update_butterfly_effect(ButterflyEffect *effect, float dt);
+void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused);
 
 void draw_butterfly_effect(const ButterflyEffect *effect);
 

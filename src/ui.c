@@ -45,11 +45,10 @@ AppState *init_state(DoublePendulum *lp) {
         return NULL;
     }
 
-    // s->current_screen = (screen == NULL) ? SCREEN_MENU : screen;
     s->current_screen = SCREEN_MENU;
     s->hide_controls = false;
-    s->lab_pendulum = lp;
-    s->butterfly_effect = create_butterfly_effect();
+    s->is_paused = true;
+    s->show_trail = false;
 
     return s;
 }

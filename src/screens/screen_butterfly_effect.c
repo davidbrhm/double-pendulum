@@ -10,9 +10,9 @@ extern Font global_font_ui;
 extern Font global_font_hud;
 
 void update_screen_butterfly_effect(AppState *state) {
-    if (!state->butterfly_effect) return;
+    if (!state->sim.butterfly_effect) return;
 
-    ButterflyEffect *bf = state->butterfly_effect;
+    ButterflyEffect *bf = state->sim.butterfly_effect;
 
     if (IsKeyDown(KEY_D)) bf->camera_angle += BF_CAM_ROT_SPEED;
     if (IsKeyDown(KEY_A)) bf->camera_angle -= BF_CAM_ROT_SPEED;
@@ -20,12 +20,12 @@ void update_screen_butterfly_effect(AppState *state) {
 
     switch (state->current_key) {
         case KEY_SPACE:
-            bf->is_paused = !bf->is_paused;
-            LOG_INFO("space -> pause: %d", bf->is_paused);
+            state->is_paused = !state->is_paused;
+            LOG_INFO("space -> pause: %d", state->is_paused);
             break;
         case KEY_R:
             destroy_butterfly_effect(bf);
-            state->butterfly_effect = create_butterfly_effect();
+            state->sim.butterfly_effect = create_butterfly_effect();
             LOG_INFO("R -> reset bf e");
             break;
         case KEY_H:
@@ -36,14 +36,16 @@ void update_screen_butterfly_effect(AppState *state) {
             bf->camera_angle = 0;
             LOG_INFO("C -> camera center");
             break;
+        case KEY_T:
+            state->show_trail = !state->show_trail;
+            LOG_INFO("T -> show trail: %d", state->show_trail);
+            break;
         default: break;
     }
 }
 
 
 void draw_screen_butterfly_effect(AppState *state) {
-    draw_butterfly_effect(state->butterfly_effect);
-
     if (state->hide_controls) return;
 
     const int screen_w = GetScreenWidth();

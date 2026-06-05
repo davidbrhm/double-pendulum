@@ -14,12 +14,18 @@ typedef enum AppScreen {
     SCREEN_SETTINGS
 } AppScreen;
 
-typedef struct AppState {
-    AppScreen current_screen;
-    bool hide_controls;
-    int current_key;
+typedef union ActiveSimulation {
     DoublePendulum *lab_pendulum;
     ButterflyEffect *butterfly_effect;
+} ActiveSimulation;
+
+typedef struct AppState {
+    AppScreen current_screen;
+    int current_key;
+    bool hide_controls;
+    bool is_paused;
+    bool show_trail;
+    ActiveSimulation sim;
 } AppState;
 
 AppState *init_state(DoublePendulum *lp);

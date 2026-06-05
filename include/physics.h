@@ -9,13 +9,8 @@ typedef struct DoublePendulum {
     float l1, l2;
     float m1, m2;
     float g;
-
     float theta1, theta2;
     float omega1, omega2;
-
-    bool is_paused;
-    bool show_trail;
-
     Vector2 trail[TRAIL_MAX_LENGTH];
     int trail_count;
 } DoublePendulum;
@@ -25,7 +20,7 @@ DoublePendulum *create_pendulum(void);
 
 void display_pendulum(DoublePendulum *p, int origin_x, int origin_y);
 
-void update_pendulum(DoublePendulum *p, float dt);
+void update_pendulum(DoublePendulum *p, float dt, bool record_trail);
 
 void randomize_pendulum(DoublePendulum *p);
 

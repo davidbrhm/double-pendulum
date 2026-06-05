@@ -2,7 +2,8 @@
 #define DOUBLE_PENDULUM_RENDER_H
 
 #include "physics.h"
+#include "ui.h"
 
-void draw_pendulum(DoublePendulum *p, int origin_x, int origin_y);
+void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail);
 
 #endif //DOUBLE_PENDULUM_RENDER_H

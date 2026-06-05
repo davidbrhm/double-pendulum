@@ -23,8 +23,6 @@ DoublePendulum *create_pendulum(void) {
     p->omega1 = 0.0f;
     p->omega2 = 0.0f;
 
-    p->is_paused = true;
-    p->show_trail = false;
     p->trail_count = 0;
 
     return p;
@@ -71,8 +69,8 @@ static void calculate_accelerations(DoublePendulum *p, float t1, float t2, float
  * @param p Pointer to the DoublePendulum instance
  * @param dt Delta time (time step) in seconds
  */
-void update_pendulum(DoublePendulum *p, float dt) {
-    if (!p || p->is_paused) return;
+void update_pendulum(DoublePendulum *p, float dt, bool record_trail) {
+    if (!p) return;
 
     // 1. Store initial state
     float t1 = p->theta1;
@@ -125,7 +123,7 @@ void update_pendulum(DoublePendulum *p, float dt) {
 
 
     // Update trial
-    if (p->show_trail) {
+    if (record_trail) {
         float x1 = p->l1 * sinf(p->theta1);
         float y1 = p->l1 * cosf(p->theta1);
         float x2 = x1 + p->l2 * sinf(p->theta2);

@@ -7,19 +7,22 @@ extern Font global_font_ui;
 extern Font global_font_hud;
 
 void update_screen_core_sim(AppState *state) {
-    if (!state->lab_pendulum) return;
+    if (!state->sim.lab_pendulum) {
+        LOG_ERROR("[SYS] Null pointer exception -> DoublePendulum pointer is NULL in update_screen_core_sim()");
+        return;
+    }
 
     switch (state->current_key) {
         case KEY_SPACE:
-            state->lab_pendulum->is_paused = !state->lab_pendulum->is_paused;
-            LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->lab_pendulum->is_paused);
+            state->is_paused = !state->is_paused;
+            LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->is_paused);
             break;
         case KEY_R:
-            randomize_pendulum(state->lab_pendulum);
+            randomize_pendulum(state->sim.lab_pendulum);
             break;
         case KEY_T:
-            state->lab_pendulum->show_trail = !state->lab_pendulum->show_trail;
-            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->lab_pendulum->show_trail);
+            state->show_trail = !state->show_trail;
+            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->show_trail);
             break;
         case KEY_H:
             state->hide_controls = !state->hide_controls;
@@ -57,8 +60,8 @@ void draw_screen_core_sim(AppState *state) {
     // if (!state->hide_controls && state->lab_pendulum) {
     DrawTextEx(global_font_ui, "TELEMETRY", (Vector2){pad, screen_h - 160.0f}, base_size * 0.8f, 2.0f, THEME_FG);
 
-    const char *t1_str = TextFormat("THETA 1 : %6.2f rad", state->lab_pendulum->theta1);
-    const char *t2_str = TextFormat("THETA 2 : %6.2f rad", state->lab_pendulum->theta2);
+    const char *t1_str = TextFormat("THETA 1 : %6.2f rad", state->sim.lab_pendulum->theta1);
+    const char *t2_str = TextFormat("THETA 2 : %6.2f rad", state->sim.lab_pendulum->theta2);
 
     DrawTextEx(global_font_hud, t1_str, (Vector2){pad, screen_h - 130.0f}, base_size * 0.7f, 1.0f, THEME_FG_DIM);
     DrawTextEx(global_font_hud, t2_str, (Vector2){pad, screen_h - 110.0f}, base_size * 0.7f, 1.0f, THEME_FG_DIM);

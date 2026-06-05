@@ -21,6 +21,7 @@ int main(void) {
 
     DoublePendulum *lab_pendulum = create_pendulum();
     AppState *app_state = init_state(lab_pendulum);
+    AppScreen last_screen = SCREEN_MENU;
 
     while (!WindowShouldClose()) {
         update_ui(app_state);
@@ -29,29 +30,57 @@ int main(void) {
         float dt = GetFrameTime();
         if (dt > 0.1f) dt = 1.0f / TARGET_FPS;
 
-        if (current_screen == CORE_SIMULATION && !lab_pendulum->is_paused) {
-            update_pendulum(lab_pendulum, dt);
-        } else if (app_state->current_screen == SCREEN_BUTTERFLY_EFFECT) {
-            update_butterfly_effect(app_state->butterfly_effect, dt);
+        if (current_screen != last_screen) {
+            LOG_INFO("[SYS] Screen transition: %d -> %d", last_screen, current_screen);
+
+            if (last_screen == SCREEN_BUTTERFLY_EFFECT) {
+                destroy_butterfly_effect(app_state->sim.butterfly_effect);
+                app_state->sim.butterfly_effect = NULL;
+            }
+            app_state->is_paused = true;
+
+            switch (current_screen) {
+                case CORE_SIMULATION:
+                    app_state->sim.lab_pendulum = lab_pendulum;
+                    break;
+                case SCREEN_BUTTERFLY_EFFECT:
+                    app_state->sim.butterfly_effect = create_butterfly_effect();
+                    break;
+                default: break;
+            }
+
+            last_screen = current_screen;
+        }
+
+        if (current_screen == CORE_SIMULATION && !app_state->is_paused) {
+            update_pendulum(app_state->sim.lab_pendulum, dt, app_state->show_trail);
+        } else if (current_screen == SCREEN_BUTTERFLY_EFFECT) {
+            update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused);
         }
 
         // drawing section
         BeginDrawing();
 
         ClearBackground(BLACK);
-        draw_ui(app_state);
 
         switch (current_screen) {
             case CORE_SIMULATION:
-                draw_pendulum(lab_pendulum, GetScreenWidth() / 2, GetScreenHeight() / 2);
+                draw_pendulum(app_state->sim.lab_pendulum, GetScreenWidth() / 2, GetScreenHeight() / 2,
+                              app_state->show_trail);
                 break;
             case SCREEN_BUTTERFLY_EFFECT:
+                draw_butterfly_effect(app_state->sim.butterfly_effect);
                 break;
             default:
                 break;
         }
+        draw_ui(app_state);
 
         EndDrawing();
+    }
+
+    if (app_state->current_screen == SCREEN_BUTTERFLY_EFFECT) {
+        destroy_butterfly_effect(app_state->sim.butterfly_effect);
     }
 
     destroy_pendulum(lab_pendulum);

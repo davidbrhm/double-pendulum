@@ -26,7 +26,6 @@ ButterflyEffect *create_butterfly_effect(void) {
     effect->pendulums = malloc(BF_SWARM_SIZE * sizeof(DoublePendulum));
     if (!effect->pendulums) return NULL;
 
-    effect->is_paused = false;
     effect->camera_angle = 0.0f;
 
     effect->camera_angle = 0.0f;
@@ -52,14 +51,12 @@ ButterflyEffect *create_butterfly_effect(void) {
         effect->pendulums[i].omega1 = 0.0f;
         effect->pendulums[i].omega2 = 0.0f;
 
-        effect->pendulums[i].show_trail = false;
-        effect->pendulums[i].is_paused = false;
     }
 
     return effect;
 }
 
-void update_butterfly_effect(ButterflyEffect *effect, float dt) {
+void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused) {
     if (!effect) {
         LOG_ERROR("[SYS] Null pointer exception -> ButterflyEffect pointer 'effect' is NULL in update_butterfly_effect()");
         return;
@@ -67,14 +64,17 @@ void update_butterfly_effect(ButterflyEffect *effect, float dt) {
 
     update_butterfly_camera_position(effect);
 
-    if (effect->is_paused) return;
+    if (is_paused) return;
     for (int i = 0; i < BF_SWARM_SIZE; i++) {
-        update_pendulum(&effect->pendulums[i], dt);
+        update_pendulum(&effect->pendulums[i], dt, false);
     }
 }
 
 void draw_butterfly_effect(const ButterflyEffect *effect) {
-    if (!effect) return;
+    if (!effect) {
+        LOG_ERROR("[SYS] Null pointer exception -> ButterflyEffect pointer is NULL in draw_butterfly_effect()");
+        return;
+    }
 
     rlSetClipPlanes(BF_CLIP_NEAR, BF_CLIP_FAR);
 

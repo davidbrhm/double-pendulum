@@ -6,13 +6,13 @@
 #include <math.h>
 
 
-void draw_pendulum(DoublePendulum *p, int origin_x, int origin_y) {
+void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail) {
     if (!p) {
         LOG_ERROR("[RENDER] Null pointer exception -> Pendulum pointer 'p' is NULL in draw_pendulum()");
         return;
     }
 
-    if (p->show_trail && p->trail_count > 1) {
+    if (show_trail && p->trail_count > 1) {
         for (int i = 0; i < p->trail_count - 1; i++) {
             float alpha = 1.0f - ((float) i / (float) p->trail_count);
 
