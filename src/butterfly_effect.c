@@ -24,6 +24,7 @@ ButterflyEffect *create_butterfly_effect(void) {
     if (!effect) return NULL;
 
     effect->pendulums = malloc(BF_SWARM_SIZE * sizeof(DoublePendulum));
+    // effect->pendulums = calloc(BF_SWARM_SIZE, sizeof(DoublePendulum));
     if (!effect->pendulums) return NULL;
 
     effect->camera_angle = 0.0f;
@@ -50,15 +51,16 @@ ButterflyEffect *create_butterfly_effect(void) {
 
         effect->pendulums[i].omega1 = 0.0f;
         effect->pendulums[i].omega2 = 0.0f;
-
+        effect->pendulums[i].trail_count = 0;
     }
 
     return effect;
 }
 
-void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused) {
+void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused, bool show_trail) {
     if (!effect) {
-        LOG_ERROR("[SYS] Null pointer exception -> ButterflyEffect pointer 'effect' is NULL in update_butterfly_effect()");
+        LOG_ERROR(
+            "[SYS] Null pointer exception -> ButterflyEffect pointer 'effect' is NULL in update_butterfly_effect()");
         return;
     }
 
@@ -66,7 +68,7 @@ void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused) 
 
     if (is_paused) return;
     for (int i = 0; i < BF_SWARM_SIZE; i++) {
-        update_pendulum(&effect->pendulums[i], dt, false);
+        update_pendulum(&effect->pendulums[i], dt, show_trail);
     }
 }
 
@@ -85,6 +87,23 @@ void draw_butterfly_effect(const ButterflyEffect *effect) {
 
     for (int i = 0; i < BF_SWARM_SIZE; i++) {
         DoublePendulum *p = &effect->pendulums[i];
+
+        // trail drawing
+        if (p->trail_count > 1) {
+            const float z = i * BF_GAP;
+            for (int j = 0; j < p->trail_count - 1; j++) {
+                float alpha = 1.0f - ((float) j / (float) p->trail_count);
+
+                Color trail_color = ColorFromHSV((float) i / BF_SWARM_SIZE * BF_COLOR_HUE_RANGE + BF_COLOR_HUE_OFFSET,
+                                                 0.8f, 0.9f);
+                trail_color.a = (unsigned char) (alpha * 255);
+
+                Vector3 start_point = {p->trail[j].x, -p->trail[j].y, z};
+                Vector3 end_point = {p->trail[j + 1].x, -p->trail[j + 1].y, z};
+
+                DrawLine3D(start_point, end_point, trail_color);
+            }
+        }
 
         Vector3 current_origin = {0.0f, 0.0f, i * BF_GAP};
 

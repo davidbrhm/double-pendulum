@@ -22,7 +22,7 @@ void update_screen_core_sim(AppState *state) {
             break;
         case KEY_T:
             state->show_trail = !state->show_trail;
-            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->show_trail);
+            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->show_trail); // TODO: clear trails if false
             break;
         case KEY_H:
             state->hide_controls = !state->hide_controls;

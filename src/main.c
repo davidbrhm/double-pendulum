@@ -56,7 +56,7 @@ int main(void) {
                 }
                 break;
             case SCREEN_BUTTERFLY_EFFECT:
-                update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused);
+                update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused, app_state->show_trail);
                 break;
             default:
                 break;

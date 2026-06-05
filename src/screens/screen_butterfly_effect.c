@@ -56,6 +56,20 @@ void draw_screen_butterfly_effect(AppState *state) {
     // title
     DrawTextEx(global_font_ui, "THE BUTTERFLY EFFECT", (Vector2){pad, pad}, base_size, 2.0f, THEME_FG);
 
+    // performance (copy paste from screen_code_sim.c)
+    const float line_spacing = base_size * 1.5f;
+    const float frame_ms = GetFrameTime() * 1000.0f;
+    const char *fps_text = TextFormat("FPS : %d", GetFPS());
+    const char *dt_text = TextFormat("DT  : %.2f ms", frame_ms);
+
+    const float fps_w = MeasureTextEx(global_font_hud, fps_text, base_size * 0.8f, 1.0f).x;
+    const float dt_w = MeasureTextEx(global_font_hud, dt_text, base_size * 0.8f, 1.0f).x;
+
+    DrawTextEx(global_font_hud, fps_text, (Vector2){screen_w - fps_w - pad, pad}, base_size * 0.8f, 1.0f,
+               THEME_FG);
+    DrawTextEx(global_font_hud, dt_text, (Vector2){screen_w - dt_w - pad, pad + line_spacing}, base_size * 0.8f, 1.0f,
+               THEME_FG_DIM);
+
     // HUD
     float btn_y = screen_h - pad - base_size;
     const char *help_text =
