@@ -14,19 +14,9 @@ void update_screen_butterfly_effect(AppState *state) {
 
     ButterflyEffect *bf = state->butterfly_effect;
 
-    if (IsKeyDown(KEY_D)) bf->camera_angle += 0.02f;
-    if (IsKeyDown(KEY_A)) bf->camera_angle -= 0.02f;
+    if (IsKeyDown(KEY_D)) bf->camera_angle += BF_CAM_ROT_SPEED;
+    if (IsKeyDown(KEY_A)) bf->camera_angle -= BF_CAM_ROT_SPEED;
 
-    // TODO: camera state
-    float center_z = ((SWARM_SIZE - 1) * GAP) / 2.0f;
-    float total_length = fabsf((SWARM_SIZE - 1) * GAP);
-    float dynamic_radius = 600.0f + (total_length * 0.5f); // const
-
-    bf->camera.position.x = sinf(bf->camera_angle) * dynamic_radius;
-    bf->camera.position.y = 0;
-    bf->camera.position.z = center_z + (cosf(bf->camera_angle) * dynamic_radius);
-
-    bf->camera.target = (Vector3){0.0f, -150.0f, center_z};
 
     switch (state->current_key) {
         case KEY_SPACE:
