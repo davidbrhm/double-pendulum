@@ -28,7 +28,7 @@ typedef struct AppState {
     ActiveSimulation sim;
 } AppState;
 
-AppState *init_state(DoublePendulum *lp);
+AppState *init_state(void);
 
 void destroy_state(AppState *state);
 

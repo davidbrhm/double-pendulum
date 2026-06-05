@@ -38,7 +38,7 @@ void unload_ui_theme(void) {
     LOG_INFO("[SYS] UI Theme unloaded.");
 }
 
-AppState *init_state(DoublePendulum *lp) {
+AppState *init_state(void) {
     AppState *s = calloc(1, sizeof(AppState));
     if (!s) {
         LOG_FATAL("[SYS] Memory allocation failed -> Target: AppState struct in init_state()");

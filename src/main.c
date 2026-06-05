@@ -20,7 +20,9 @@ int main(void) {
     init_ui_theme();
 
     DoublePendulum *lab_pendulum = create_pendulum();
-    AppState *app_state = init_state(lab_pendulum);
+    ButterflyEffect *bf_effect = create_butterfly_effect();
+
+    AppState *app_state = init_state();
     AppScreen last_screen = SCREEN_MENU;
 
     while (!WindowShouldClose()) {
@@ -33,29 +35,31 @@ int main(void) {
         if (current_screen != last_screen) {
             LOG_INFO("[SYS] Screen transition: %d -> %d", last_screen, current_screen);
 
-            if (last_screen == SCREEN_BUTTERFLY_EFFECT) {
-                destroy_butterfly_effect(app_state->sim.butterfly_effect);
-                app_state->sim.butterfly_effect = NULL;
-            }
-            app_state->is_paused = true;
-
             switch (current_screen) {
                 case CORE_SIMULATION:
                     app_state->sim.lab_pendulum = lab_pendulum;
                     break;
                 case SCREEN_BUTTERFLY_EFFECT:
-                    app_state->sim.butterfly_effect = create_butterfly_effect();
+                    app_state->sim.butterfly_effect = bf_effect;
                     break;
-                default: break;
+                default:
+                    break;
             }
-
+            app_state->is_paused = true;
             last_screen = current_screen;
         }
 
-        if (current_screen == CORE_SIMULATION && !app_state->is_paused) {
-            update_pendulum(app_state->sim.lab_pendulum, dt, app_state->show_trail);
-        } else if (current_screen == SCREEN_BUTTERFLY_EFFECT) {
-            update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused);
+        switch (current_screen) {
+            case CORE_SIMULATION:
+                if (!app_state->is_paused) {
+                    update_pendulum(app_state->sim.lab_pendulum, dt, app_state->show_trail);
+                }
+                break;
+            case SCREEN_BUTTERFLY_EFFECT:
+                update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused);
+                break;
+            default:
+                break;
         }
 
         // drawing section
