@@ -45,18 +45,20 @@ int main(void) {
                 default:
                     break;
             }
-            app_state->is_paused = true;
+
+            app_state->flags |= APP_FLAG_PAUSED;
             last_screen = current_screen;
         }
 
         switch (current_screen) {
             case CORE_SIMULATION:
-                if (!app_state->is_paused) {
-                    update_pendulum(app_state->sim.lab_pendulum, dt, app_state->show_trail);
+                if (!(app_state->flags & APP_FLAG_PAUSED)) {
+                    update_pendulum(app_state->sim.lab_pendulum, dt, app_state->flags & APP_FLAG_SHOW_TRAIL);
                 }
                 break;
             case SCREEN_BUTTERFLY_EFFECT:
-                update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->is_paused, app_state->show_trail);
+                update_butterfly_effect(app_state->sim.butterfly_effect, dt, app_state->flags & APP_FLAG_PAUSED,
+                                        app_state->flags & APP_FLAG_SHOW_TRAIL);
                 break;
             default:
                 break;
@@ -70,10 +72,10 @@ int main(void) {
         switch (current_screen) {
             case CORE_SIMULATION:
                 draw_pendulum(app_state->sim.lab_pendulum, GetScreenWidth() / 2, GetScreenHeight() / 2,
-                              app_state->show_trail);
+                              app_state->flags & APP_FLAG_SHOW_TRAIL, app_state->flags & APP_FLAG_SHOW_ONLY_TRAILS);
                 break;
             case SCREEN_BUTTERFLY_EFFECT:
-                draw_butterfly_effect(app_state->sim.butterfly_effect);
+                draw_butterfly_effect(app_state->sim.butterfly_effect, app_state->flags & APP_FLAG_SHOW_TRAIL, app_state->flags & APP_FLAG_SHOW_ONLY_TRAILS);
                 break;
             default:
                 break;

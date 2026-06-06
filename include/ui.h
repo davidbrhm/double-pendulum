@@ -1,6 +1,7 @@
 #ifndef DOUBLE_PENDULUM_UI_H
 #define DOUBLE_PENDULUM_UI_H
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "physics.h"
 #include "butterfly_effect.h"
@@ -14,6 +15,13 @@ typedef enum AppScreen {
     SCREEN_SETTINGS
 } AppScreen;
 
+typedef enum AppFlag {
+    APP_FLAG_PAUSED = 1 << 0,
+    APP_FLAG_SHOW_TRAIL = 1 << 1,
+    APP_FLAG_HIDE_CONTROLS = 1 << 2,
+    APP_FLAG_SHOW_ONLY_TRAILS = 1 << 3
+} AppFlag;
+
 typedef union ActiveSimulation {
     DoublePendulum *lab_pendulum;
     ButterflyEffect *butterfly_effect;
@@ -22,9 +30,7 @@ typedef union ActiveSimulation {
 typedef struct AppState {
     AppScreen current_screen;
     int current_key;
-    bool hide_controls;
-    bool is_paused;
-    bool show_trail;
+    uint32_t flags;
     ActiveSimulation sim;
 } AppState;
 

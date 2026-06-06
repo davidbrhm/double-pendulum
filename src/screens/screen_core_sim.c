@@ -14,25 +14,30 @@ void update_screen_core_sim(AppState *state) {
 
     switch (state->current_key) {
         case KEY_SPACE:
-            state->is_paused = !state->is_paused;
-            LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->is_paused);
+            state->flags ^= APP_FLAG_PAUSED;
+            LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->flags & APP_FLAG_PAUSED);
+            break;
+        case KEY_H:
+            state->flags ^= APP_FLAG_HIDE_CONTROLS;
+            LOG_INFO("[INPUT] Key 'H' pressed -> Hide controls state: %d", state->flags & APP_FLAG_HIDE_CONTROLS);
+            break;
+        case KEY_T:
+            state->flags ^= APP_FLAG_SHOW_TRAIL;
+            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->flags & APP_FLAG_SHOW_TRAIL);
             break;
         case KEY_R:
             randomize_pendulum(state->sim.lab_pendulum);
             break;
-        case KEY_T:
-            state->show_trail = !state->show_trail;
-            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->show_trail); // TODO: clear trails if false
-            break;
-        case KEY_H:
-            state->hide_controls = !state->hide_controls;
+        case KEY_V:
+            state->flags ^= APP_FLAG_SHOW_ONLY_TRAILS;
+            LOG_INFO("[INPUT] Key 'V' pressed -> Hide pendulum state: %d", state->flags & APP_FLAG_SHOW_ONLY_TRAILS);
             break;
         default: break;
     }
 }
 
 void draw_screen_core_sim(AppState *state) {
-    if (state->hide_controls) return;
+    if (state->flags & APP_FLAG_HIDE_CONTROLS) return;
 
     const int screen_w = GetScreenWidth();
     const int screen_h = GetScreenHeight();

@@ -4,6 +4,6 @@
 #include "physics.h"
 #include "ui.h"
 
-void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail);
+void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail, bool show_only_trails);
 
 #endif //DOUBLE_PENDULUM_RENDER_H

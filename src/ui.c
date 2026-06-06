@@ -46,9 +46,7 @@ AppState *init_state(void) {
     }
 
     s->current_screen = SCREEN_MENU;
-    s->hide_controls = false;
-    s->is_paused = true;
-    s->show_trail = false;
+    s->flags = APP_FLAG_SHOW_TRAIL;
 
     return s;
 }

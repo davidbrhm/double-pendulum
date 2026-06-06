@@ -5,12 +5,18 @@
 extern Font global_font_ui;
 extern Font global_font_hud;
 
+static void prepare_simulation_flags(AppState *state) {
+    state->flags &= ~(APP_FLAG_SHOW_TRAIL | APP_FLAG_SHOW_ONLY_TRAILS);
+}
+
 void update_screen_menu(AppState *state) {
     switch (state->current_key) {
         case KEY_ONE:
+            prepare_simulation_flags(state);
             state->current_screen = CORE_SIMULATION;
             return;
         case KEY_TWO:
+            prepare_simulation_flags(state);
             state->current_screen = SCREEN_BUTTERFLY_EFFECT;
             return;
         /*

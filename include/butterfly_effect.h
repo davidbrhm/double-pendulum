@@ -20,7 +20,7 @@
 // camera constants
 #define BF_CAM_BASE_DIST 600.0f
 #define BF_CAM_LENGTH_MULT 0.5f
-#define BF_CAM_Y_OFFSET (-50.0f)
+#define BF_CAM_Y_OFFSET 0.f // ?
 #define BF_CAM_TARGET_Y (-150.0f)
 #define BF_CAM_FOV 45.0f
 #define BF_CAM_ROT_SPEED 0.02f
@@ -31,13 +31,13 @@ typedef struct ButterflyEffect {
     DoublePendulum *pendulums;
     Camera3D camera;
     float camera_angle;
-} ButterflyEffect; // TODO: FPS + center
+} ButterflyEffect;
 
 ButterflyEffect *create_butterfly_effect(void);
 
 void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused, bool show_trail);
 
-void draw_butterfly_effect(const ButterflyEffect *effect);
+void draw_butterfly_effect(const ButterflyEffect *effect, bool show_trail, bool show_only_trails);
 
 void destroy_butterfly_effect(ButterflyEffect *effect);
 

@@ -20,25 +20,29 @@ void update_screen_butterfly_effect(AppState *state) {
 
     switch (state->current_key) {
         case KEY_SPACE:
-            state->is_paused = !state->is_paused;
-            LOG_INFO("space -> pause: %d", state->is_paused);
+            state->flags ^= APP_FLAG_PAUSED;
+            LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->flags & APP_FLAG_PAUSED);
+            break;
+        case KEY_H:
+            state->flags ^= APP_FLAG_HIDE_CONTROLS;
+            LOG_INFO("[INPUT] Key 'H' pressed -> Hide controls state: %d", state->flags & APP_FLAG_HIDE_CONTROLS);
+            break;
+        case KEY_V:
+            state->flags ^= APP_FLAG_SHOW_ONLY_TRAILS;
+            LOG_INFO("[INPUT] Key 'V' pressed -> Hide pendulum state: %d", state->flags & APP_FLAG_SHOW_ONLY_TRAILS);
             break;
         case KEY_R:
             destroy_butterfly_effect(bf);
             state->sim.butterfly_effect = create_butterfly_effect();
             LOG_INFO("R -> reset bf e");
             break;
-        case KEY_H:
-            state->hide_controls = !state->hide_controls;
-            LOG_INFO("H -> hide HUD");
-            break;
         case KEY_C:
             bf->camera_angle = 0;
             LOG_INFO("C -> camera center");
             break;
         case KEY_T:
-            state->show_trail = !state->show_trail;
-            LOG_INFO("T -> show trail: %d", state->show_trail);
+            state->flags ^= APP_FLAG_SHOW_TRAIL;
+            LOG_INFO("[INPUT] Key 'T' pressed -> Trail state: %d", state->flags & APP_FLAG_SHOW_TRAIL);
             break;
         default: break;
     }
@@ -46,7 +50,7 @@ void update_screen_butterfly_effect(AppState *state) {
 
 
 void draw_screen_butterfly_effect(AppState *state) {
-    if (state->hide_controls) return;
+    if (state->flags & APP_FLAG_HIDE_CONTROLS) return;
 
     const int screen_w = GetScreenWidth();
     const int screen_h = GetScreenHeight();

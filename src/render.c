@@ -6,7 +6,7 @@
 #include <math.h>
 
 
-void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail) {
+void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool show_trail, bool show_only_trails) {
     if (!p) {
         LOG_ERROR("[RENDER] Null pointer exception -> Pendulum pointer 'p' is NULL in draw_pendulum()");
         return;
@@ -25,6 +25,8 @@ void draw_pendulum(const DoublePendulum *p, int origin_x, int origin_y, bool sho
             );
         }
     }
+
+    if (show_only_trails) return;
 
     float x0 = (float) origin_x;
     float y0 = (float) origin_y;

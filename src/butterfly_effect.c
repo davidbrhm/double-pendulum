@@ -11,7 +11,7 @@ static void update_butterfly_camera_position(ButterflyEffect *effect) {
     const float total_length = fabsf((BF_SWARM_SIZE - 1) * BF_GAP);
     const float dynamic_radius = BF_CAM_BASE_DIST + (total_length * BF_CAM_LENGTH_MULT);
 
-    effect->camera.position.x = sinf(effect->camera_angle) * dynamic_radius;
+    effect->camera.position.x = sinf(effect->camera_angle) * dynamic_radius; // fine tune it
     effect->camera.position.y = BF_CAM_Y_OFFSET;
     effect->camera.position.z = center_z + (cosf(effect->camera_angle) * dynamic_radius);
 
@@ -72,7 +72,7 @@ void update_butterfly_effect(ButterflyEffect *effect, float dt, bool is_paused, 
     }
 }
 
-void draw_butterfly_effect(const ButterflyEffect *effect) {
+void draw_butterfly_effect(const ButterflyEffect *effect, bool show_trail, bool show_only_trails) {
     if (!effect) {
         LOG_ERROR("[SYS] Null pointer exception -> ButterflyEffect pointer is NULL in draw_butterfly_effect()");
         return;
@@ -89,7 +89,8 @@ void draw_butterfly_effect(const ButterflyEffect *effect) {
         DoublePendulum *p = &effect->pendulums[i];
 
         // trail drawing
-        if (p->trail_count > 1) {
+        if (show_trail) {
+            // !
             const float z = i * BF_GAP;
             for (int j = 0; j < p->trail_count - 1; j++) {
                 float alpha = 1.0f - ((float) j / (float) p->trail_count);
@@ -105,29 +106,31 @@ void draw_butterfly_effect(const ButterflyEffect *effect) {
             }
         }
 
-        Vector3 current_origin = {0.0f, 0.0f, i * BF_GAP};
+        if (!show_only_trails) {
+            Vector3 current_origin = {0.0f, 0.0f, i * BF_GAP};
 
-        Vector3 p1 = {
-            p->l1 * sinf(p->theta1),
-            -p->l1 * cosf(p->theta1),
-            i * BF_GAP
-        };
+            Vector3 p1 = {
+                p->l1 * sinf(p->theta1),
+                -p->l1 * cosf(p->theta1),
+                i * BF_GAP
+            };
 
-        Vector3 p2 = {
-            p1.x + p->l2 * sinf(p->theta2),
-            p1.y - p->l2 * cosf(p->theta2),
-            i * BF_GAP
-        };
+            Vector3 p2 = {
+                p1.x + p->l2 * sinf(p->theta2),
+                p1.y - p->l2 * cosf(p->theta2),
+                i * BF_GAP
+            };
 
-        Color color = ColorFromHSV((float) i / BF_SWARM_SIZE * 120.0f + 140.0f, 0.8f, 0.9f);
-        color.a = 255;
+            Color color = ColorFromHSV((float) i / BF_SWARM_SIZE * 120.0f + 140.0f, 0.8f, 0.9f);
+            color.a = 255;
 
-        DrawCylinderEx(current_origin, p1, BF_LINK_RADIUS, BF_LINK_RADIUS, 8, color);
-        DrawCylinderEx(p1, p2, BF_LINK_RADIUS, BF_LINK_RADIUS, 8, color);
+            DrawCylinderEx(current_origin, p1, BF_LINK_RADIUS, BF_LINK_RADIUS, 8, color);
+            DrawCylinderEx(p1, p2, BF_LINK_RADIUS, BF_LINK_RADIUS, 8, color);
 
-        DrawSphere(current_origin, BF_LINK_RADIUS, color);
-        DrawSphere(p1, BF_NODE_RADIUS, color);
-        DrawSphere(p2, BF_NODE_RADIUS, color);
+            DrawSphere(current_origin, BF_LINK_RADIUS, color);
+            DrawSphere(p1, BF_NODE_RADIUS, color);
+            DrawSphere(p2, BF_NODE_RADIUS, color);
+        }
     }
 
     EndMode3D();
