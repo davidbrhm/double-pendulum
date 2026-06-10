@@ -19,6 +19,10 @@ void update_screen_butterfly_effect(AppState *state) {
 
 
     switch (state->current_key) {
+        case KEY_ESCAPE:
+            state->current_screen = SCREEN_MENU;
+            LOG_INFO("[SYS] ESC -> Return to Menu from Butterfly Effect");
+            return;
         case KEY_SPACE:
             state->flags ^= APP_FLAG_PAUSED;
             LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->flags & APP_FLAG_PAUSED);
@@ -77,7 +81,7 @@ void draw_screen_butterfly_effect(AppState *state) {
     // HUD
     float btn_y = screen_h - pad - base_size;
     const char *help_text =
-            "[A/D] Rotate Camera    [SPACE] Play/Pause    [R] Reset Swarm    [H] Hide Controls    [ESC] Menu";
+            "[A/D] Rotate    [SPACE] Play/Pause    [R] Reset    [T] Toggle Trail    [V] Hide Pendulums    [C] Center Cam    [H] Hide HUD    [ESC] Menu";
     float help_w = MeasureTextEx(global_font_ui, help_text, base_size * 0.8f, 1.0f).x;
 
     DrawTextEx(global_font_ui, help_text, (Vector2){screen_w - help_w - pad, btn_y}, base_size * 0.8f, 1.0f,

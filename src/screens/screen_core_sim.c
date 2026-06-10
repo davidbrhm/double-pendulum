@@ -13,6 +13,10 @@ void update_screen_core_sim(AppState *state) {
     }
 
     switch (state->current_key) {
+        case KEY_ESCAPE:
+            state->current_screen = SCREEN_MENU;
+            LOG_INFO("[SYS] ESC -> Return to Menu from Core Simulation");
+            return;
         case KEY_SPACE:
             state->flags ^= APP_FLAG_PAUSED;
             LOG_INFO("[INPUT] Key 'SPACE' pressed -> Paused state: %d", state->flags & APP_FLAG_PAUSED);
@@ -74,7 +78,7 @@ void draw_screen_core_sim(AppState *state) {
     // HUD
     const float btn_y = screen_h - pad - base_size;
     const char *help_text =
-            "[SPACE] Play/Pause    [R] Randomize    [T] Toggle trail    [H] Hide controls    [ESC] Menu";
+            "[SPACE] Play/Pause    [R] Randomize    [T] Toggle Trail    [V] Hide Pendulum    [H] Hide Controls    [ESC] Menu";
     const float help_w = MeasureTextEx(global_font_ui, help_text, base_size * 0.8f, 1.0f).x;
 
     DrawTextEx(global_font_ui, help_text, (Vector2){screen_w - help_w - pad, btn_y}, base_size * 0.8f, 1.0f,

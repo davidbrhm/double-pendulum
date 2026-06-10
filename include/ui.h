@@ -42,8 +42,5 @@ void init_ui_theme(void);
 
 void unload_ui_theme(void);
 
-void update_ui(AppState *state);
-
-void draw_ui(AppState *state);
 
 #endif //DOUBLE_PENDULUM_UI_H

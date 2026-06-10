@@ -1,10 +1,5 @@
 #include "ui.h"
-#include "constants.h"
 #include "logger.h"
-
-#include "screens/screen_menu.h"
-#include "screens/screen_core_sim.h"
-#include "screens/screen_butterfly_effect.h"
 
 #include <stdlib.h>
 
@@ -56,42 +51,3 @@ void destroy_state(AppState *state) {
 }
 
 
-void update_ui(AppState *state) {
-    if (!state) {
-        LOG_FATAL("[SYS] Null pointer exception -> State pointer 'p' is NULL in update_ui()");
-        return;
-    }
-
-    state->current_key = GetKeyPressed();
-
-    switch (state->current_key) {
-        case KEY_ESCAPE: state->current_screen = SCREEN_MENU;
-            return;
-    }
-
-    switch (state->current_screen) {
-        case SCREEN_MENU: update_screen_menu(state);
-            break;
-        case CORE_SIMULATION: update_screen_core_sim(state);
-            break;
-        case SCREEN_BUTTERFLY_EFFECT:
-            update_screen_butterfly_effect(state);
-            break;
-        default: break;
-    }
-}
-
-void draw_ui(AppState *state) {
-    if (!state) return;
-
-    switch (state->current_screen) {
-        case SCREEN_MENU: draw_screen_menu(state);
-            break;
-        case CORE_SIMULATION: draw_screen_core_sim(state);
-            break;
-        case SCREEN_BUTTERFLY_EFFECT:
-            draw_screen_butterfly_effect(state);
-            break;
-        default: break;
-    }
-}

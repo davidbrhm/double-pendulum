@@ -19,14 +19,16 @@ void update_screen_menu(AppState *state) {
             prepare_simulation_flags(state);
             state->current_screen = SCREEN_BUTTERFLY_EFFECT;
             return;
+
+        case KEY_THREE:
+            prepare_simulation_flags(state);
+            state->current_screen = SCREEN_2D_FRACTAL;
+            return;
         /*
-case KEY_THREE:
-    state->current_screen = SCREEN_2D_FRACTAL;
-    return;
 case KEY_FOUR:
-    state->current_screen = SCREEN_3D_SPACE;
-    return;
-    */
+state->current_screen = SCREEN_3D_SPACE;
+return;
+*/
         case KEY_S:
             state->current_screen = SCREEN_SETTINGS;
             return;

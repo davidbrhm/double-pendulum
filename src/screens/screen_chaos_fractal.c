@@ -1,0 +1,41 @@
+#include "screens/screen_chaos_fractal.h"
+#include "logger.h"
+
+extern Font global_font_ui;
+extern Font global_font_hud;
+
+void update_screen_chaos_fractal(AppState *state) {
+    if (!state) return;
+
+    switch (state->current_key) {
+        case KEY_ESCAPE:
+            state->current_screen = SCREEN_MENU;
+            LOG_INFO("[SYS] ESC -> Return to Menu from Chaos Fractal");
+            return;
+        case KEY_H:
+            state->flags ^= APP_FLAG_HIDE_CONTROLS;
+            LOG_INFO("[INPUT] H -> Toggle HUD");
+            break;
+        default:
+            break;
+    }
+}
+
+void draw_screen_chaos_fractal(const AppState *state) {
+    if (0) { // !state->sim.lab_pendulum
+        LOG_ERROR("[SYS] Null pointer exception -> ... pointer is NULL in draw_screen_chaos_fractal()");
+        return;
+    }
+
+    // TODO: pixel puffer
+
+    const char *title = "2D CHAOS MAP";
+    const int text_width = MeasureText(title, 20);
+    DrawText(title, (GetScreenWidth() - text_width) / 2, GetScreenHeight() / 2, 20, LIGHTGRAY);
+
+    if (!(state->flags & APP_FLAG_HIDE_CONTROLS)) {
+        const char *help_text = "[H] Hide Controls    [ESC] Menu";
+        DrawText(help_text, 10, GetScreenHeight() - 20, 10, DARKGRAY);
+    }
+}
+

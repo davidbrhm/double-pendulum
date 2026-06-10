@@ -23,8 +23,8 @@ ButterflyEffect *create_butterfly_effect(void) {
     ButterflyEffect *effect = calloc(1, sizeof(ButterflyEffect));
     if (!effect) return NULL;
 
-    effect->pendulums = malloc(BF_SWARM_SIZE * sizeof(DoublePendulum));
-    // effect->pendulums = calloc(BF_SWARM_SIZE, sizeof(DoublePendulum));
+    // effect->pendulums = malloc(BF_SWARM_SIZE * sizeof(DoublePendulum));
+    effect->pendulums = calloc(BF_SWARM_SIZE, sizeof(DoublePendulum));
     if (!effect->pendulums) return NULL;
 
     effect->camera_angle = 0.0f;
