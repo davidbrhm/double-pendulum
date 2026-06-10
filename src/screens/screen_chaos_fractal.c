@@ -5,36 +5,39 @@ extern Font global_font_ui;
 extern Font global_font_hud;
 
 void update_screen_chaos_fractal(AppState *state) {
-    if (!state) {
-        LOG_ERROR("[SYS] Null pointer exception -> state pointer is NULL in update_screen_chaos_fractal()");
-        return;
-    }
+    if (!state || !state->sim.chaos_fractal) return;
+
+    ChaosFractal *cf = state->sim.chaos_fractal;
 
     if (IsWindowResized()) {
-        resize_chaos_fractal(state->sim.chaos_fractal, GetScreenWidth(), GetScreenHeight());
-        LOG_INFO("[SYS] Chaos Fractal buffers resized to: %dx%d", GetScreenWidth(), GetScreenHeight());
+        resize_chaos_fractal(cf, GetScreenWidth(), GetScreenHeight());
     }
 
     switch (state->current_key) {
+        case KEY_SPACE:
+            cf->is_evolving = !cf->is_evolving;
+            LOG_INFO("[SYS] Chaos Fractal evolving: %d", cf->is_evolving);
+            break;
+
+        case KEY_R:
+            reset_chaos_fractal_state(cf);
+            cf->is_evolving = false;
+            break;
+
         case KEY_ESCAPE:
             state->current_screen = SCREEN_MENU;
-            LOG_INFO("[SYS] ESC -> Return to Menu from Chaos Fractal");
             return;
+
         case KEY_H:
             state->flags ^= APP_FLAG_HIDE_CONTROLS;
-            LOG_INFO("[INPUT] H -> Toggle HUD");
             break;
-        case KEY_G:
-            LOG_INFO("[INPUT] G -> Generate Fractal start");
-            generate_chaos_map_mt(state->sim.chaos_fractal, 1, 2000);
-            LOG_INFO("[INPUT] G -> Generate Fractal end");
-            break;
-        case KEY_F:
-            LOG_INFO("[INPUT] G -> Generate Fractal start");
-            generate_chaos_map_mt(state->sim.chaos_fractal, 10, 400);
-            LOG_INFO("[INPUT] G -> Generate Fractal end");
+
         default:
             break;
+    }
+
+    if (cf->is_evolving) {
+        evolve_chaos_map_mt(cf, FRACTAL_STEP_PER_FRAME);
     }
 }
 
