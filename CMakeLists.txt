@@ -21,6 +21,7 @@ add_executable(double_pendulum ${SOURCES}
         include/screens/screen_butterfly_effect.h
         include/butterfly_effect.h
         include/screens/screen_chaos_fractal.h
+        include/chaos_fractal.h
 )
 
 target_link_libraries(double_pendulum PRIVATE raylib)

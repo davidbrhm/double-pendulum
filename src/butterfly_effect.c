@@ -21,11 +21,17 @@ static void update_butterfly_camera_position(ButterflyEffect *effect) {
 
 ButterflyEffect *create_butterfly_effect(void) {
     ButterflyEffect *effect = calloc(1, sizeof(ButterflyEffect));
-    if (!effect) return NULL;
+    if (!effect) {
+        LOG_FATAL("[SYS] Memory allocation failed -> Target: ButterflyEffect struct in create_butterfly_effect()");
+        return NULL;
+    }
 
     // effect->pendulums = malloc(BF_SWARM_SIZE * sizeof(DoublePendulum));
     effect->pendulums = calloc(BF_SWARM_SIZE, sizeof(DoublePendulum));
-    if (!effect->pendulums) return NULL;
+    if (!effect->pendulums) {
+        LOG_FATAL("[SYS] Memory allocation failed -> Target: DoublePendulum array in create_butterfly_effect()");
+        return NULL;
+    }
 
     effect->camera_angle = 0.0f;
 

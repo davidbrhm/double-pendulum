@@ -27,6 +27,7 @@ int main(void) {
 
     DoublePendulum *lab_pendulum = create_pendulum();
     ButterflyEffect *bf_effect = create_butterfly_effect();
+    ChaosFractal *chaos_fractal = create_chaos_fractal(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     AppState *app_state = init_state();
     AppScreen last_screen = SCREEN_MENU;
@@ -49,6 +50,7 @@ int main(void) {
                     app_state->sim.butterfly_effect = bf_effect;
                     break;
                 case SCREEN_2D_FRACTAL:
+                    app_state->sim.chaos_fractal = chaos_fractal;
                     break;
                 default:
                     break;

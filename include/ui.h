@@ -5,6 +5,7 @@
 
 #include "physics.h"
 #include "butterfly_effect.h"
+#include "chaos_fractal.h"
 
 typedef enum AppScreen {
     SCREEN_MENU,
@@ -25,6 +26,7 @@ typedef enum AppFlag {
 typedef union ActiveSimulation {
     DoublePendulum *lab_pendulum;
     ButterflyEffect *butterfly_effect;
+    ChaosFractal *chaos_fractal;
 } ActiveSimulation;
 
 typedef struct AppState {
