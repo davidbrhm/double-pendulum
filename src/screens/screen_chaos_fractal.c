@@ -11,6 +11,10 @@ void update_screen_chaos_fractal(AppState *state) {
 
     ChaosFractal *cf = state->sim.chaos_fractal;
 
+    if (IsWindowResized()) {
+        resize_chaos_fractal(cf, GetScreenWidth(), GetScreenHeight());
+    }
+
     switch (state->current_key) {
         case KEY_SPACE:
             cf->is_evolving = !cf->is_evolving;
@@ -47,10 +51,10 @@ void draw_screen_chaos_fractal(const AppState *state) {
     }
 
     Texture2D tex = state->sim.chaos_fractal->texture;
-    Rectangle sourceRec = {0.0f, 0.0f, (float) tex.width, (float) tex.height};
-    Rectangle destRec = {0.0f, 0.0f, (float) GetScreenWidth(), (float) GetScreenHeight()};
-    Vector2 origin = { 0.0f, 0.0f };
-    DrawTexturePro(tex, sourceRec, destRec, origin, 0.0f, WHITE);
+    Rectangle src = { 0.0f, 0.0f, (float)tex.width, (float)tex.height };
+    Rectangle dst = { 0.0f, 0.0f, (float)GetScreenWidth(), (float)GetScreenHeight() };
+
+    DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
 
 
     if (!(state->flags & APP_FLAG_HIDE_CONTROLS)) {

@@ -27,7 +27,7 @@ int main(void) {
 
     DoublePendulum *lab_pendulum = create_pendulum();
     ButterflyEffect *bf_effect = create_butterfly_effect();
-    ChaosFractal *chaos_fractal = create_chaos_fractal();
+    ChaosFractal *chaos_fractal = create_chaos_fractal(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     AppState *app_state = init_state();
     AppScreen last_screen = SCREEN_MENU;

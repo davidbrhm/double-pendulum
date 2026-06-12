@@ -51,18 +51,18 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
     LOG_INFO("[SYS] Chaos Fractal state reset ready.");
 }
 
-ChaosFractal *create_chaos_fractal(void) {
+ChaosFractal *create_chaos_fractal(int width, int height) {
     ChaosFractal *cf = calloc(1, sizeof(ChaosFractal));
     if (!cf) {
         LOG_FATAL("[SYS] Memory allocation failed -> Target: ChaosFractal struct in create_chaos_fractal()");
         return NULL;
     }
 
-    cf->pixel_buffer = GenImageColor(FRACTAL_BUFFER_WIDTH, FRACTAL_BUFFER_HEIGHT, BLACK);
+    cf->pixel_buffer = GenImageColor(width, height, BLACK);
     cf->texture = LoadTextureFromImage(cf->pixel_buffer);
-    SetTextureFilter(cf->texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(cf->texture, TEXTURE_FILTER_TRILINEAR);
 
-    int total_pixels = FRACTAL_BUFFER_WIDTH * FRACTAL_BUFFER_HEIGHT;
+    int total_pixels = width * height;
     cf->pendulums = calloc(total_pixels, sizeof(DoublePendulum));
     cf->max_speeds = calloc(total_pixels, sizeof(float));
     if (!cf->pendulums || !cf->max_speeds) {
@@ -72,6 +72,7 @@ ChaosFractal *create_chaos_fractal(void) {
 
     cf->current_step = 0;
     cf->is_evolving = false;
+    cf->frame_counter = 0;
 
     reset_chaos_fractal_state(cf);
     return cf;
@@ -86,8 +87,17 @@ static void *chaos_map_worker_live(void *arg) {
     Color *pixels = (Color *) cf->pixel_buffer.data;
     const float DT = 0.016f;
 
+    // checkerboard rendering: calculate target pixel offset for this frame (0 to 3)
+    int target_subframe = cf->frame_counter % 4;
+    int target_dx = target_subframe % 2;
+    int target_dy = target_subframe / 2;
+
     for (int y = args->start_y; y < args->end_y; y++) {
+        if (y % 2 != target_dy) continue;
+
         for (int x = 0; x < width; x++) {
+            if (x % 2 != target_dx) continue;
+
             int idx1 = y * width + x;
             int idx2 = (height - 1 - y) * width + (width - 1 - x); // origin-symmetric pixel
 
@@ -125,6 +135,30 @@ static void *chaos_map_worker_live(void *arg) {
     pthread_exit(NULL);
 }
 
+void resize_chaos_fractal(ChaosFractal *cf, int new_width, int new_height) {
+    if (!cf) {
+        LOG_ERROR("[SYS] Null pointer exception -> ChaosFractal pointer 'cf' is NULL in resize_chaos_fractal()");
+        return;
+    }
+
+    UnloadTexture(cf->texture);
+    UnloadImage(cf->pixel_buffer);
+    free(cf->pendulums);
+    free(cf->max_speeds);
+
+    cf->pixel_buffer = GenImageColor(new_width, new_height, BLACK);
+    cf->texture = LoadTextureFromImage(cf->pixel_buffer);
+
+    int total_pixels = new_width * new_height;
+    cf->pendulums = calloc(total_pixels, sizeof(DoublePendulum));
+    cf->max_speeds = calloc(total_pixels, sizeof(float));
+
+    cf->current_step = 0;
+    cf->is_evolving = false;
+
+    reset_chaos_fractal_state(cf);
+}
+
 void evolve_chaos_map_mt(ChaosFractal *cf, int steps_per_frame) {
     if (!cf) {
         LOG_ERROR("[SYS] Null pointer exception -> ChaosFractal pointer 'cf' is NULL in evolve_chaos_map_mt()");
@@ -152,6 +186,7 @@ void evolve_chaos_map_mt(ChaosFractal *cf, int steps_per_frame) {
     }
 
     cf->current_step += steps_per_frame;
+    cf->frame_counter++;
     UpdateTexture(cf->texture, cf->pixel_buffer.data);
 }
 

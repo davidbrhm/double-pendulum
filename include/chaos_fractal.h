@@ -14,9 +14,6 @@
 #define VORTEX_THRESHOLD_DARK 2.0f
 #define VORTEX_THRESHOLD_GLOW 12.0f
 
-// fix render puffer
-#define FRACTAL_BUFFER_WIDTH  2000
-#define FRACTAL_BUFFER_HEIGHT 2000
 
 typedef struct ChaosFractal {
     Image pixel_buffer;
@@ -25,10 +22,12 @@ typedef struct ChaosFractal {
     float *max_speeds;
     int current_step;
     bool is_evolving;
+    unsigned int frame_counter;
 } ChaosFractal;
 
-ChaosFractal *create_chaos_fractal(void);
+ChaosFractal *create_chaos_fractal(int width, int height);
 
+void resize_chaos_fractal(ChaosFractal *cf, int new_width, int new_height);
 
 void reset_chaos_fractal_state(ChaosFractal *cf);
 
