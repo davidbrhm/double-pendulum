@@ -6,14 +6,13 @@
 
 #define FRACTAL_MAX_SPEED_THRESHOLD 15.0f
 
-#define FRACTAL_HUE_COLD 240.0f
-#define FRACTAL_HUE_HOT  0.0f
+#define FRACTAL_STEP_PER_FRAME 30 // 4 by default
+#define VORTEX_HUE 200.0f
+#define VORTEX_SATURATION_DEEP 1.0f
+#define VORTEX_BRIGHTNESS_DEEP 0.6f
 
-#define FRACTAL_BASE_SATURATION 0.9f
-#define FRACTAL_BASE_BRIGHTNESS 0.95f
-#define FRACTAL_DARK_THRESHOLD 0.05f
-
-#define FRACTAL_STEP_PER_FRAME 4
+#define VORTEX_THRESHOLD_DARK 2.0f
+#define VORTEX_THRESHOLD_GLOW 12.0f
 
 typedef struct ChaosFractal {
     Image pixel_buffer;

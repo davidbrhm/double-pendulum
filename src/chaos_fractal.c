@@ -23,7 +23,7 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
     int height = cf->pixel_buffer.height;
     Color *pixels = (Color *) cf->pixel_buffer.data;
 
-    LOG_INFO("[SYS] Planting ~640,000 double pendulums...");
+    LOG_INFO("[SYS] Planting %d double pendulums...", (width * height));
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -122,16 +122,27 @@ static void *chaos_map_worker_live(void *arg) {
                 }
             }
 
-            float intensity = fminf(cf->max_speeds[idx] / FRACTAL_MAX_SPEED_THRESHOLD, 1.0f);
+            float speed = cf->max_speeds[idx];
 
-            float hue = FRACTAL_HUE_COLD - (intensity * (FRACTAL_HUE_COLD - FRACTAL_HUE_HOT));
+            Color pixel_color = BLACK;
 
-            float brightness = FRACTAL_BASE_BRIGHTNESS;
-            if (intensity < FRACTAL_DARK_THRESHOLD) {
-                brightness = (intensity / FRACTAL_DARK_THRESHOLD) * FRACTAL_BASE_BRIGHTNESS;
+            if (speed < VORTEX_THRESHOLD_DARK) {
+                float brightness_intensity = (speed / VORTEX_THRESHOLD_DARK);
+
+                pixel_color = ColorFromHSV(VORTEX_HUE, VORTEX_SATURATION_DEEP,
+                                           brightness_intensity * VORTEX_BRIGHTNESS_DEEP);
+            } else if (speed < VORTEX_THRESHOLD_GLOW) {
+                float transition_intensity = (speed - VORTEX_THRESHOLD_DARK) / (
+                                                 VORTEX_THRESHOLD_GLOW - VORTEX_THRESHOLD_DARK);
+
+                pixel_color = ColorFromHSV(VORTEX_HUE, VORTEX_SATURATION_DEEP,
+                                           VORTEX_BRIGHTNESS_DEEP + (
+                                               transition_intensity * (1.0f - VORTEX_BRIGHTNESS_DEEP)));
+            } else {
+                pixel_color = ColorFromHSV(VORTEX_HUE, 0.0f, 1.0f);
             }
 
-            pixels[idx] = ColorFromHSV(hue, FRACTAL_BASE_SATURATION, brightness);
+            pixels[idx] = pixel_color;
         }
     }
     pthread_exit(NULL);
