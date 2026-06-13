@@ -5,14 +5,16 @@
 #include "physics.h"
 
 #define FRACTAL_MAX_SPEED_THRESHOLD 15.0f
-
 #define FRACTAL_STEP_PER_FRAME 4 // 4 by default
+#define FRACTAL_MAX_EVOLUTION_STEPS 1000
+
 #define VORTEX_HUE 200.0f
 #define VORTEX_SATURATION_DEEP 1.0f
 #define VORTEX_BRIGHTNESS_DEEP 0.6f
 
-#define VORTEX_THRESHOLD_DARK 2.0f
-#define VORTEX_THRESHOLD_GLOW 12.0f
+// TODO: dark-glow ratio
+#define VORTEX_THRESHOLD_DARK 20.0f
+#define VORTEX_THRESHOLD_GLOW 50.0f
 
 
 typedef struct ChaosFractal {
@@ -23,6 +25,9 @@ typedef struct ChaosFractal {
     int current_step;
     bool is_evolving;
     unsigned int frame_counter;
+    float offset_x;
+    float offset_y;
+    float zoom;
 } ChaosFractal;
 
 ChaosFractal *create_chaos_fractal(int width, int height);

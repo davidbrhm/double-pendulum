@@ -15,31 +15,47 @@ void update_screen_chaos_fractal(AppState *state) {
         resize_chaos_fractal(cf, GetScreenWidth(), GetScreenHeight());
     }
 
+    const float move_speed = 0.05f / cf->zoom;
+
+    // WASD panning
+    if (IsKeyDown(KEY_W)) cf->offset_y -= move_speed;
+    if (IsKeyDown(KEY_S)) cf->offset_y += move_speed;
+    if (IsKeyDown(KEY_A)) cf->offset_x -= move_speed;
+    if (IsKeyDown(KEY_D)) cf->offset_x += move_speed;
+
+    // trackpad panning
+    Vector2 wheel = GetMouseWheelMoveV();
+    if (wheel.x != 0.0f || wheel.y != 0.0f) {
+        cf->offset_x -= wheel.x * move_speed * 0.2f;
+        cf->offset_y -= wheel.y * move_speed * 0.2f;
+    }
+
+    // TODO: zoom
+
     switch (state->current_key) {
         case KEY_SPACE:
             cf->is_evolving = !cf->is_evolving;
             LOG_INFO("[SYS] Chaos Fractal evolving: %d", cf->is_evolving);
             break;
-
         case KEY_R:
             reset_chaos_fractal_state(cf);
             cf->is_evolving = false;
             break;
-
         case KEY_ESCAPE:
             state->current_screen = SCREEN_MENU;
             return;
-
         case KEY_H:
             state->flags ^= APP_FLAG_HIDE_CONTROLS;
             break;
-
         default:
             break;
     }
 
     if (cf->is_evolving) {
-        evolve_chaos_map_mt(cf, FRACTAL_STEP_PER_FRAME);
+        if (cf->current_step < FRACTAL_MAX_EVOLUTION_STEPS)
+            evolve_chaos_map_mt(cf, FRACTAL_STEP_PER_FRAME);
+        else
+            cf->is_evolving = false;
     }
 }
 
@@ -50,9 +66,19 @@ void draw_screen_chaos_fractal(const AppState *state) {
         return;
     }
 
-    Texture2D tex = state->sim.chaos_fractal->texture;
-    Rectangle src = { 0.0f, 0.0f, (float)tex.width, (float)tex.height };
-    Rectangle dst = { 0.0f, 0.0f, (float)GetScreenWidth(), (float)GetScreenHeight() };
+    ChaosFractal *cf = state->sim.chaos_fractal;
+    Texture2D tex = cf->texture;
+
+    float pixel_shift_x = 0.0f;
+    float pixel_shift_y = 0.0f;
+
+    if (cf->zoom == 1.0f) {
+        pixel_shift_x = (cf->offset_x / (2.0f * PI)) * tex.width;
+        pixel_shift_y = (cf->offset_y / (2.0f * PI)) * tex.height;
+    }
+
+    Rectangle src = {pixel_shift_x, pixel_shift_y, (float) tex.width, (float) tex.height};
+    Rectangle dst = {0.0f, 0.0f, (float) GetScreenWidth(), (float) GetScreenHeight()};
 
     DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
 

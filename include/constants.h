@@ -4,6 +4,7 @@
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 700
 #define TARGET_FPS 60
+#define NUM_THREADS 12
 
 #define FONT_SIZE_TITLE 34
 #define FONT_SIZE_MENU 21
