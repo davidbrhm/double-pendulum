@@ -8,13 +8,14 @@
 #define FRACTAL_STEP_PER_FRAME 4 // 4 by default
 #define FRACTAL_MAX_EVOLUTION_STEPS 1000
 
-#define VORTEX_HUE 200.0f
-#define VORTEX_SATURATION_DEEP 1.0f
-#define VORTEX_BRIGHTNESS_DEEP 0.6f
 
-// TODO: dark-glow ratio
+// TODO: find the best color
+#define VORTEX_HUE 200.0f
+#define VORTEX_SATURATION_DEEP 0.8f
+#define VORTEX_BRIGHTNESS_DEEP 0.3f
 #define VORTEX_THRESHOLD_DARK 20.0f
 #define VORTEX_THRESHOLD_GLOW 50.0f
+
 
 
 typedef struct ChaosFractal {

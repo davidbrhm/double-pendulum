@@ -31,6 +31,16 @@ void update_screen_chaos_fractal(AppState *state) {
     }
 
     // TODO: zoom
+    if (!cf->is_evolving) {
+        if (IsKeyDown(KEY_UP)) {
+            cf->zoom *= 1.05f;
+            if (cf->zoom > 1.0f) cf->zoom = 1.0f;
+        }
+        if (IsKeyDown(KEY_DOWN)) {
+            cf->zoom /= 1.05f;
+            //if (cf->zoom < 0.001f) cf->zoom = 0.001f; // max: 1000x1000
+        }
+    }
 
     switch (state->current_key) {
         case KEY_SPACE:
@@ -69,20 +79,20 @@ void draw_screen_chaos_fractal(const AppState *state) {
     ChaosFractal *cf = state->sim.chaos_fractal;
     Texture2D tex = cf->texture;
 
-    float pixel_shift_x = 0.0f;
-    float pixel_shift_y = 0.0f;
+    float tiles = (cf->zoom < 1.0f) ? (1.0f / cf->zoom) : 1.0f;
 
-    if (cf->zoom == 1.0f) {
-        pixel_shift_x = (cf->offset_x / (2.0f * PI)) * tex.width;
-        pixel_shift_y = (cf->offset_y / (2.0f * PI)) * tex.height;
-    }
+    float center_x = (cf->offset_x / (2.0f * PI)) * tex.width + (tex.width / 2.0f);
+    float center_y = (cf->offset_y / (2.0f * PI)) * tex.height + (tex.height / 2.0f);
+    float src_x = center_x - ((tex.width * tiles) / 2.0f);
+    float src_y = center_y - ((tex.height * tiles) / 2.0f);
 
-    Rectangle src = {pixel_shift_x, pixel_shift_y, (float) tex.width, (float) tex.height};
+    Rectangle src = {src_x, src_y, (float) tex.width * tiles, (float) tex.height * tiles};
     Rectangle dst = {0.0f, 0.0f, (float) GetScreenWidth(), (float) GetScreenHeight()};
 
     DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
 
 
+    
     if (!(state->flags & APP_FLAG_HIDE_CONTROLS)) {
         // performance (copy paste from screen_code_sim.c)
         const int screen_w = GetScreenWidth();

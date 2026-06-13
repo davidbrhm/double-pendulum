@@ -118,7 +118,8 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
 
     LOG_INFO("[SYS] Planting %d double pendulums...", (width * height));
 
-    float range = PI / cf->zoom;
+    float effective_zoom = (cf->zoom < 1.0f) ? 1.0f : cf->zoom;
+    float range = PI / effective_zoom;
     float phys_offset_x = (cf->zoom == 1.0f) ? 0.0f : cf->offset_x;
     float phys_offset_y = (cf->zoom == 1.0f) ? 0.0f : cf->offset_y;
 
