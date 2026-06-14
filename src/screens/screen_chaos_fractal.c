@@ -92,7 +92,7 @@ void draw_screen_chaos_fractal(const AppState *state) {
     DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
 
 
-    
+
     if (!(state->flags & APP_FLAG_HIDE_CONTROLS)) {
         // performance (copy paste from screen_code_sim.c)
         const int screen_w = GetScreenWidth();
