@@ -62,10 +62,13 @@ void update_screen_chaos_fractal(AppState *state) {
     }
 
     if (cf->is_evolving) {
-        if (cf->current_step < FRACTAL_MAX_EVOLUTION_STEPS)
+        if (cf->current_step < FRACTAL_MAX_EVOLUTION_STEPS) {
             evolve_chaos_map_mt(cf, FRACTAL_STEP_PER_FRAME);
-        else
+            cf->evolved = false;
+        } else {
             cf->is_evolving = false;
+            cf->evolved = true;
+        }
     }
 }
 
@@ -92,7 +95,6 @@ void draw_screen_chaos_fractal(const AppState *state) {
     DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
 
 
-
     if (!(state->flags & APP_FLAG_HIDE_CONTROLS)) {
         // performance (copy paste from screen_code_sim.c)
         const int screen_w = GetScreenWidth();
@@ -116,7 +118,18 @@ void draw_screen_chaos_fractal(const AppState *state) {
 
         // HUD
         float btn_y = screen_h - pad - base_size;
-        const char *help_text = "[H] Hide Controls    [ESC] Menu";
+
+        const char *help_text;
+        if (state->sim.chaos_fractal->is_evolving)
+            help_text = "[W/A/S/D] Move around    [SPACE] Stop Rendering    [R] Reset    [H] Hide Controls    [ESC] Menu";
+        else {
+            if (state->sim.chaos_fractal->evolved) {
+                help_text = "[UP/DOWN] Zoom    [W/A/S/D] Move around    [R] Reset    [H] Hide Controls    [ESC] Menu";
+            } else {
+                help_text = "[W/A/S/D] Move around    [SPACE] Start Rendering    [R] Reset    [H] Hide Controls    [ESC] Menu";
+            }
+        }
+
 
         float help_w = MeasureTextEx(global_font_ui, help_text, base_size * 0.8f, 1.0f).x;
 

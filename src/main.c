@@ -13,9 +13,24 @@
 #include "screens/screen_butterfly_effect.h"
 #include "screens/screen_chaos_fractal.h"
 
+static void monitor_helper() {
+    int monitorCount = GetMonitorCount();
+
+    if (monitorCount > 1) {
+        int secondMonitor = 1;
+        Vector2 monitorPos = GetMonitorPosition(secondMonitor);
+        int monitorWidth = GetMonitorWidth(secondMonitor);
+        int monitorHeight = GetMonitorHeight(secondMonitor);
+        int posX = (int)monitorPos.x + (monitorWidth - WINDOW_WIDTH) / 2;
+        int posY = (int)monitorPos.y + (monitorHeight - WINDOW_HEIGHT) / 2;
+        SetWindowPosition(posX, posY);
+    }
+}
+
 int main(void) {
 #ifndef NDEBUG
     init_logger();
+    monitor_helper();
 #endif
 
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI | FLAG_WINDOW_RESIZABLE);
