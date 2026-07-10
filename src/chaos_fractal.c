@@ -34,7 +34,7 @@ ChaosFractal *create_chaos_fractal(int width, int height) {
     cf->pendulums = calloc(total_pixels, sizeof(FractalPendulum));
     cf->max_speeds = calloc(total_pixels, sizeof(float));
     if (!cf->pendulums || !cf->max_speeds) {
-        LOG_FATAL("[SYS] Memory allocation failed -> Target: DoublePendulum array in create_chaos_fractal()");
+        LOG_FATAL("[SYS] Memory allocation failed -> Target: FractalPendulum array in create_chaos_fractal()");
         return NULL;
     }
 
@@ -71,7 +71,7 @@ static void *chaos_map_worker_live(void *arg) {
 
             for (int step = 0; step < args->steps_per_frame; step++) {
                 const double DT = 0.016; // TODO:
-                update_fractal_pendulum(p, DT); 
+                update_fractal_pendulum(p, DT);
 
                 const double current_speed = fabs(p->omega1) + fabs(p->omega2);
                 if (current_speed > cf->max_speeds[idx1]) {
@@ -79,7 +79,7 @@ static void *chaos_map_worker_live(void *arg) {
                 }
             }
 
-            float speed = cf->max_speeds[idx1];
+            float speed = (float)cf->max_speeds[idx1];
             Color pixel_color = BLACK;
 
             if (speed < VORTEX_THRESHOLD_DARK) {
@@ -94,7 +94,7 @@ static void *chaos_map_worker_live(void *arg) {
             }
 
             pixels[idx1] = pixel_color;
-            if (cf->zoom == 1.0f) {
+            if (cf->zoom == 1.0) {
                 int idx2 = (height - 1 - y) * width + (width - 1 - x); // origin-symmetric pixel
 
                 cf->max_speeds[idx2] = cf->max_speeds[idx1];
@@ -118,20 +118,20 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
 
     LOG_INFO("[SYS] Planting %d double pendulums...", (width * height));
 
-    float effective_zoom = (cf->zoom < 1.0f) ? 1.0f : cf->zoom;
-    float range = PI / effective_zoom;
-    float phys_offset_x = (cf->zoom == 1.0f) ? 0.0f : cf->offset_x;
-    float phys_offset_y = (cf->zoom == 1.0f) ? 0.0f : cf->offset_y;
+    double effective_zoom = (cf->zoom < 1.0) ? 1.0 : cf->zoom;
+    double range = PI / effective_zoom;
+    double phys_offset_x = (cf->zoom == 1.0) ? 0.0 : cf->offset_x;
+    double phys_offset_y = (cf->zoom == 1.0) ? 0.0 : cf->offset_y;
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             int idx = y * width + x;
 
-            cf->pendulums[idx].theta1 = phys_offset_x + (((float) x / width) * 2.0f * range - range);
-            cf->pendulums[idx].theta2 = phys_offset_y + (((float) y / height) * 2.0f * range - range);
+            cf->pendulums[idx].theta1 = phys_offset_x + (((double)x / width) * 2.0 * range - range);
+            cf->pendulums[idx].theta2 = phys_offset_y + (((double)y / height) * 2.0 * range - range);
 
-            cf->pendulums[idx].omega1 = 0.0f;
-            cf->pendulums[idx].omega2 = 0.0f;
+            cf->pendulums[idx].omega1 = 0.0;
+            cf->pendulums[idx].omega2 = 0.0;
 
             cf->max_speeds[idx] = 0.0f;
 
@@ -140,9 +140,9 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
     }
 
     cf->current_step = 0;
-    cf->zoom = 1.0f;
-    cf->offset_x = 0.0f;
-    cf->offset_y = 0.0f;
+    cf->zoom = 1.0;
+    cf->offset_x = 0.0;
+    cf->offset_y = 0.0;
     UpdateTexture(cf->texture, cf->pixel_buffer.data);
     LOG_INFO("[SYS] Chaos Fractal state reset ready.");
 }
@@ -162,7 +162,7 @@ void resize_chaos_fractal(ChaosFractal *cf, int new_width, int new_height) {
     cf->texture = LoadTextureFromImage(cf->pixel_buffer);
 
     int total_pixels = new_width * new_height;
-    cf->pendulums = calloc(total_pixels, sizeof(DoublePendulum));
+    cf->pendulums = calloc(total_pixels, sizeof(FractalPendulum));
     cf->max_speeds = calloc(total_pixels, sizeof(float));
 
     cf->current_step = 0;
@@ -180,7 +180,7 @@ void evolve_chaos_map_mt(ChaosFractal *cf, int steps_per_frame) {
     pthread_t threads[NUM_THREADS];
     FractalThreadArgs thread_args[NUM_THREADS];
 
-    int calc_height = (cf->zoom == 1.0f) ? (cf->pixel_buffer.height / 2) : cf->pixel_buffer.height;
+    int calc_height = (cf->zoom == 1.0) ? (cf->pixel_buffer.height / 2) : cf->pixel_buffer.height;
     int rows_per_thread = calc_height / NUM_THREADS;
 
     for (int i = 0; i < NUM_THREADS; i++) {

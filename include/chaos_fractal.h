@@ -25,14 +25,14 @@ typedef struct ChaosFractal {
     Image pixel_buffer;
     Texture2D texture;
     FractalPendulum *pendulums;
-    float *max_speeds;
+    double *max_speeds;
     int current_step;
     bool is_evolving;
     bool evolved;
     unsigned int frame_counter;
-    float offset_x;
-    float offset_y;
-    float zoom;
+    double offset_x;
+    double offset_y;
+    double zoom;
 } ChaosFractal;
 
 ChaosFractal *create_chaos_fractal(int width, int height);
