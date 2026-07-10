@@ -32,7 +32,7 @@ ChaosFractal *create_chaos_fractal(int width, int height) {
 
     int total_pixels = width * height;
     cf->pendulums = calloc(total_pixels, sizeof(FractalPendulum));
-    cf->max_speeds = calloc(total_pixels, sizeof(float));
+    cf->max_speeds = calloc(total_pixels, sizeof(double));
     if (!cf->pendulums || !cf->max_speeds) {
         LOG_FATAL("[SYS] Memory allocation failed -> Target: FractalPendulum array in create_chaos_fractal()");
         return NULL;
@@ -163,7 +163,11 @@ void resize_chaos_fractal(ChaosFractal *cf, int new_width, int new_height) {
 
     int total_pixels = new_width * new_height;
     cf->pendulums = calloc(total_pixels, sizeof(FractalPendulum));
-    cf->max_speeds = calloc(total_pixels, sizeof(float));
+    cf->max_speeds = calloc(total_pixels, sizeof(double));
+    if (!cf->pendulums || !cf->max_speeds) {
+        LOG_FATAL("[SYS] Memory allocation failed -> Target: FractalPendulum array in resize_chaos_fractal()");
+        return;
+    }
 
     cf->current_step = 0;
     cf->is_evolving = false;

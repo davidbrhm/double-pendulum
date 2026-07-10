@@ -2,6 +2,7 @@
 #include "logger.h"
 
 #include <math.h>
+#include <time.h>
 
 extern Font global_font_ui;
 extern Font global_font_hud;
@@ -56,6 +57,16 @@ void update_screen_chaos_fractal(AppState *state) {
             return;
         case KEY_H:
             state->flags ^= APP_FLAG_HIDE_CONTROLS;
+            break;
+        case KEY_P:
+            time_t now = time(NULL);
+            struct tm *t = localtime(&now);
+
+            const char *filename = TextFormat("chaos_fractal_%04d%02d%02d_%02d%02d%02d.png", t->tm_year + 1900,
+                                              t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+            ExportImage(cf->pixel_buffer, filename);
+            LOG_INFO("[SYS] Fractal image saved to root directory: %s", filename);
             break;
         default:
             break;
@@ -121,12 +132,14 @@ void draw_screen_chaos_fractal(const AppState *state) {
 
         const char *help_text;
         if (state->sim.chaos_fractal->is_evolving)
-            help_text = "[W/A/S/D] Move around    [SPACE] Stop Rendering    [R] Reset    [H] Hide Controls    [ESC] Menu";
+            help_text =
+                    "[W/A/S/D] Move around    [SPACE] Stop Rendering    [R] Reset    [P] Photo    [H] Hide Controls    [ESC] Menu";
         else {
             if (state->sim.chaos_fractal->evolved) {
-                help_text = "[UP/DOWN] Zoom    [W/A/S/D] Move around    [R] Reset    [H] Hide Controls    [ESC] Menu";
+                help_text = "[UP/DOWN] Zoom    [W/A/S/D] Move around    [R] Reset    [P] Photo    [H] Hide Controls    [ESC] Menu";
             } else {
-                help_text = "[W/A/S/D] Move around    [SPACE] Start Rendering    [R] Reset    [H] Hide Controls    [ESC] Menu";
+                help_text =
+                        "[W/A/S/D] Move around    [SPACE] Start Rendering    [R] Reset    [P] Photo    [H] Hide Controls    [ESC] Menu";
             }
         }
 
