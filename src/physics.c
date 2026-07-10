@@ -1,8 +1,13 @@
 #include "physics.h"
+
+#include <assert.h>
+
 #include "logger.h"
 
 #include <stdlib.h>
 #include <math.h>
+
+#include "chaos_fractal.h"
 
 DoublePendulum *create_pendulum(void) {
     DoublePendulum *p = calloc(1, sizeof(DoublePendulum));
@@ -12,7 +17,7 @@ DoublePendulum *create_pendulum(void) {
     }
 
     p->g = GRAVITY;
-    p->l1 = BASE_LENGTH;
+    p->l1 = BASE_LENGTH; // TODO: move consts!
     p->l2 = BASE_LENGTH;
     p->m1 = BASE_MASS;
     p->m2 = BASE_MASS;
@@ -32,7 +37,7 @@ void display_pendulum(DoublePendulum *p, int origin_x, int origin_y) {
     // not implemented yet
 }
 
-/**
+/** // TODO: rewrite!
  * Calculates the angular accelerations (alpha1, alpha2) for a given state using Lagrangian mechanics
  * @param p  Pointer to the DoublePendulum instance
  * @param t1 Angle of the first arm (theta1)
@@ -42,84 +47,103 @@ void display_pendulum(DoublePendulum *p, int origin_x, int origin_y) {
  * @param a1 Pointer to store the resulting acceleration of the first arm
  * @param a2 Pointer to store the resulting acceleration of the second arm
  */
-static void calculate_accelerations(DoublePendulum *p, float t1, float t2, float w1, float w2, float *a1, float *a2) {
-    float m1 = p->m1;
-    float m2 = p->m2;
-    float l1 = p->l1;
-    float l2 = p->l2;
-    float g = p->g;
-
+static void calculate_accelerations(double t1, double t2, double w1, double w2,
+                                    double m1, double m2, double l1, double l2, double g,
+                                    double *alpha1, double *alpha2) {
     // Acceleration of the first arm
-    float num1 = -g * (2 * m1 + m2) * sinf(t1);
-    float num2 = -m2 * g * sinf(t1 - 2 * t2);
-    float num3 = -2 * sinf(t1 - t2) * m2;
-    float num4 = w2 * w2 * l2 + w1 * w1 * l1 * cosf(t1 - t2);
-    float den1 = l1 * (2 * m1 + m2 - m2 * cosf(2 * t1 - 2 * t2));
-    *a1 = (num1 + num2 + num3 * num4) / den1;
+    double num1 = -g * (2 * m1 + m2) * sin(t1);
+    double num2 = -m2 * g * sin(t1 - 2 * t2);
+    double num3 = -2 * sin(t1 - t2) * m2;
+    double num4 = w2 * w2 * l2 + w1 * w1 * l1 * cos(t1 - t2);
+    double den1 = l1 * (2 * m1 + m2 - m2 * cos(2 * t1 - 2 * t2));
+    *alpha1 = (num1 + num2 + num3 * num4) / den1;
 
     // Acceleration of the second arm
-    float num5 = 2 * sinf(t1 - t2);
-    float num6 = w1 * w1 * l1 * (m1 + m2) + g * (m1 + m2) * cosf(t1) + w2 * w2 * l2 * m2 * cosf(t1 - t2);
-    float den2 = l2 * (2 * m1 + m2 - m2 * cosf(2 * t1 - 2 * t2));
-    *a2 = (num5 * num6) / den2;
+    double num5 = 2 * sin(t1 - t2);
+    double num6 = w1 * w1 * l1 * (m1 + m2) + g * (m1 + m2) * cos(t1) + w2 * w2 * l2 * m2 * cos(t1 - t2);
+    double den2 = l2 * (2 * m1 + m2 - m2 * cos(2 * t1 - 2 * t2));
+    *alpha2 = (num5 * num6) / den2;
 }
 
 /**
- * Updates the physical state of the double pendulum using RK4 integration
- * @param p Pointer to the DoublePendulum instance
+ * Performs a single Runge-Kutta 4 (RK4) integration step to update the pendulum's state.
+ * Implemented using Loop Unrolling for maximum CPU performance, avoiding branching and arrays.
+ *
+ * @param theta1 Pointer to the first arm's angle
+ * @param theta2 Pointer to the second arm's angle
+ * @param omega1 Pointer to the first arm's angular velocity
+ * @param omega2 Pointer to the second arm's angular velocity
+ * @param m1 Mass of the first arm
+ * @param m2 Mass of the second arm
+ * @param l1 Length of the first arm
+ * @param l2 Length of the second arm
+ * @param g Gravitational acceleration constant
  * @param dt Delta time (time step) in seconds
  */
-void update_pendulum(DoublePendulum *p, float dt, bool record_trail) {
-    if (!p) return;
-
-    // 1. Store initial state
-    float t1 = p->theta1;
-    float t2 = p->theta2;
-    float w1 = p->omega1;
-    float w2 = p->omega2;
-
-    float a1, a2;
-
-    // ==========================================
-    // RUNGE-KUTTA 4 (RK4) INTEGRATOR
-    // Note: Implemented using Loop Unrolling for maximum CPU performance.
-    // Avoids branching and array lookups by manually expanding the 4 steps.
-    // ==========================================
+static void rk4_step(double *theta1, double *theta2, double *omega1, double *omega2, double m1, double m2, double l1,
+                     double l2, double g, double dt) {
+    double t1 = *theta1, t2 = *theta2;
+    double w1 = *omega1, w2 = *omega2;
+    double a1, a2;
 
     // Step 1: Evaluate at initial state
-    calculate_accelerations(p, t1, t2, w1, w2, &a1, &a2);
-    float k1_t1 = w1 * dt;
-    float k1_t2 = w2 * dt;
-    float k1_w1 = a1 * dt;
-    float k1_w2 = a2 * dt;
+    calculate_accelerations(t1, t2, w1, w2, m1, m2, l1, l2, g, &a1, &a2);
+    double k1_t1 = w1 * dt;
+    double k1_t2 = w2 * dt;
+    double k1_w1 = a1 * dt;
+    double k1_w2 = a2 * dt;
 
     // Step 2: Evaluate at midpoint (using Step 1)
-    calculate_accelerations(p, t1 + k1_t1 * 0.5f, t2 + k1_t2 * 0.5f, w1 + k1_w1 * 0.5f, w2 + k1_w2 * 0.5f, &a1, &a2);
-    float k2_t1 = (w1 + k1_w1 * 0.5f) * dt;
-    float k2_t2 = (w2 + k1_w2 * 0.5f) * dt;
-    float k2_w1 = a1 * dt;
-    float k2_w2 = a2 * dt;
+    calculate_accelerations(t1 + k1_t1 * 0.5, t2 + k1_t2 * 0.5, w1 + k1_w1 * 0.5, w2 + k1_w2 * 0.5, m1, m2, l1, l2, g,
+                            &a1, &a2);
+    double k2_t1 = (w1 + k1_w1 * 0.5) * dt;
+    double k2_t2 = (w2 + k1_w2 * 0.5) * dt;
+    double k2_w1 = a1 * dt;
+    double k2_w2 = a2 * dt;
 
     // Step 3: Evaluate at midpoint (using Step 2)
-    calculate_accelerations(p, t1 + k2_t1 * 0.5f, t2 + k2_t2 * 0.5f, w1 + k2_w1 * 0.5f, w2 + k2_w2 * 0.5f, &a1, &a2);
-    float k3_t1 = (w1 + k2_w1 * 0.5f) * dt;
-    float k3_t2 = (w2 + k2_w2 * 0.5f) * dt;
-    float k3_w1 = a1 * dt;
-    float k3_w2 = a2 * dt;
+    calculate_accelerations(t1 + k2_t1 * 0.5, t2 + k2_t2 * 0.5, w1 + k2_w1 * 0.5, w2 + k2_w2 * 0.5, m1, m2, l1, l2, g,
+                            &a1, &a2);
+    double k3_t1 = (w1 + k2_w1 * 0.5) * dt;
+    double k3_t2 = (w2 + k2_w2 * 0.5) * dt;
+    double k3_w1 = a1 * dt;
+    double k3_w2 = a2 * dt;
 
     // Step 4: Evaluate at end of step (using Step 3)
-    calculate_accelerations(p, t1 + k3_t1, t2 + k3_t2, w1 + k3_w1, w2 + k3_w2, &a1, &a2);
-    float k4_t1 = (w1 + k3_w1) * dt;
-    float k4_t2 = (w2 + k3_w2) * dt;
-    float k4_w1 = a1 * dt;
-    float k4_w2 = a2 * dt;
-
+    calculate_accelerations(t1 + k3_t1, t2 + k3_t2, w1 + k3_w1, w2 + k3_w2, m1, m2, l1, l2, g, &a1, &a2);
+    double k4_t1 = (w1 + k3_w1) * dt;
+    double k4_t2 = (w2 + k3_w2) * dt;
+    double k4_w1 = a1 * dt;
+    double k4_w2 = a2 * dt;
 
     // Weighted average
-    p->theta1 += (k1_t1 + 2.0f * k2_t1 + 2.0f * k3_t1 + k4_t1) / 6.0f;
-    p->theta2 += (k1_t2 + 2.0f * k2_t2 + 2.0f * k3_t2 + k4_t2) / 6.0f;
-    p->omega1 += (k1_w1 + 2.0f * k2_w1 + 2.0f * k3_w1 + k4_w1) / 6.0f;
-    p->omega2 += (k1_w2 + 2.0f * k2_w2 + 2.0f * k3_w2 + k4_w2) / 6.0f;
+    *theta1 += (k1_t1 + 2.0 * k2_t1 + 2.0 * k3_t1 + k4_t1) / 6.0;
+    *theta2 += (k1_t2 + 2.0 * k2_t2 + 2.0 * k3_t2 + k4_t2) / 6.0;
+    *omega1 += (k1_w1 + 2.0 * k2_w1 + 2.0 * k3_w1 + k4_w1) / 6.0;
+    *omega2 += (k1_w2 + 2.0 * k2_w2 + 2.0 * k3_w2 + k4_w2) / 6.0;
+}
+
+/**
+ * Updates the physical state of the standard visual double pendulum.
+ *
+ * @param p Pointer to the DoublePendulum instance
+ * @param dt Delta time (time step) in seconds
+ * @param record_trail Boolean flag to determine if trail coordinates should be updated
+ */
+void update_pendulum(DoublePendulum *p, float dt, bool record_trail) {
+    assert(p != NULL && "Pendulum pointer is null in update_pendulum!");
+
+    double t1 = p->theta1;
+    double t2 = p->theta2;
+    double w1 = p->omega1;
+    double w2 = p->omega2;
+
+    rk4_step(&t1, &t2, &w1, &w2, p->m1, p->m2, p->l1, p->l2, p->g, dt);
+
+    p->theta1 = (float)t1;
+    p->theta2 = (float)t2;
+    p->omega1 = (float)w1;
+    p->omega2 = (float)w2;
 
 
     // Update trial
@@ -144,7 +168,7 @@ void update_pendulum(DoublePendulum *p, float dt, bool record_trail) {
     }
 }
 
-void randomize_pendulum(DoublePendulum *p) { // (T1: 3.42, T2: 2.44)
+void randomize_pendulum(DoublePendulum *p) {
     if (!p) {
         LOG_ERROR("[SYS] Null pointer exception -> Pendulum pointer 'p' is NULL in randomize_pendulum()");
         return;
@@ -165,4 +189,18 @@ void destroy_pendulum(DoublePendulum *p) {
     }
 
     free(p);
+}
+
+/**
+ * High-performance update function for fractal generation.
+ * Uses 64-bit double precision and fixed global parameters to maximize cache locality.
+ *
+ * @param p Pointer to the FractalPendulum struct
+ * @param dt Delta time (time step) in seconds
+ */
+void update_fractal_pendulum(FractalPendulum *p, double dt) {
+    assert(p != NULL && "FractalPendulum pointer is null!");
+
+    rk4_step(&p->theta1, &p->theta2, &p->omega1, &p->omega2,
+             FRACTAL_M1, FRACTAL_M2, FRACTAL_L1, FRACTAL_L2, FRACTAL_G, dt);
 }

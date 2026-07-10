@@ -14,11 +14,17 @@
 #define VORTEX_THRESHOLD_DARK 18.0f
 #define VORTEX_THRESHOLD_GLOW 36.0f
 
+// ChaosFractal consts
+#define FRACTAL_M1 10.0
+#define FRACTAL_M2 10.0
+#define FRACTAL_L1 100.0
+#define FRACTAL_L2 100.0
+#define FRACTAL_G GRAVITY
 
 typedef struct ChaosFractal {
     Image pixel_buffer;
     Texture2D texture;
-    DoublePendulum *pendulums;
+    FractalPendulum *pendulums;
     float *max_speeds;
     int current_step;
     bool is_evolving;

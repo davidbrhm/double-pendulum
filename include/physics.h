@@ -16,6 +16,13 @@ typedef struct DoublePendulum {
 } DoublePendulum;
 
 
+typedef struct FractalPendulum {
+    double theta1, theta2;
+    double omega1, omega2;
+} FractalPendulum;
+
+void update_fractal_pendulum(FractalPendulum *p, double dt);
+
 DoublePendulum *create_pendulum(void);
 
 void display_pendulum(DoublePendulum *p, int origin_x, int origin_y);

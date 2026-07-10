@@ -31,7 +31,7 @@ ChaosFractal *create_chaos_fractal(int width, int height) {
     cf->offset_y = 0.0f;
 
     int total_pixels = width * height;
-    cf->pendulums = calloc(total_pixels, sizeof(DoublePendulum));
+    cf->pendulums = calloc(total_pixels, sizeof(FractalPendulum));
     cf->max_speeds = calloc(total_pixels, sizeof(float));
     if (!cf->pendulums || !cf->max_speeds) {
         LOG_FATAL("[SYS] Memory allocation failed -> Target: DoublePendulum array in create_chaos_fractal()");
@@ -53,7 +53,6 @@ static void *chaos_map_worker_live(void *arg) {
     int width = cf->pixel_buffer.width;
     int height = cf->pixel_buffer.height;
     Color *pixels = (Color *) cf->pixel_buffer.data;
-    const float DT = 0.016f;
 
     // checkerboard rendering: calculate target pixel offset for this frame (0 to 3)
     int target_subframe = cf->frame_counter % 4;
@@ -68,12 +67,13 @@ static void *chaos_map_worker_live(void *arg) {
 
             int idx1 = y * width + x;
 
-            DoublePendulum *p = &cf->pendulums[idx1];
+            FractalPendulum *p = &cf->pendulums[idx1];
 
             for (int step = 0; step < args->steps_per_frame; step++) {
-                update_pendulum(p, DT, false);
+                const double DT = 0.016; // TODO:
+                update_fractal_pendulum(p, DT); 
 
-                float current_speed = fabsf(p->omega1) + fabsf(p->omega2);
+                const double current_speed = fabs(p->omega1) + fabs(p->omega2);
                 if (current_speed > cf->max_speeds[idx1]) {
                     cf->max_speeds[idx1] = current_speed;
                 }
@@ -127,17 +127,12 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
         for (int x = 0; x < width; x++) {
             int idx = y * width + x;
 
-            cf->pendulums[idx].m1 = 10.0f; // const
-            cf->pendulums[idx].m2 = 10.0f;
-            cf->pendulums[idx].l1 = 100.0f;
-            cf->pendulums[idx].l2 = 100.0f;
-            cf->pendulums[idx].g = GRAVITY;
-
             cf->pendulums[idx].theta1 = phys_offset_x + (((float) x / width) * 2.0f * range - range);
             cf->pendulums[idx].theta2 = phys_offset_y + (((float) y / height) * 2.0f * range - range);
 
             cf->pendulums[idx].omega1 = 0.0f;
             cf->pendulums[idx].omega2 = 0.0f;
+
             cf->max_speeds[idx] = 0.0f;
 
             pixels[idx] = BLACK;
