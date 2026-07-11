@@ -79,7 +79,7 @@ static void *chaos_map_worker_live(void *arg) {
                 }
             }
 
-            float speed = (float)cf->max_speeds[idx1];
+            float speed = (float) cf->max_speeds[idx1];
             Color pixel_color = BLACK;
 
             if (speed < VORTEX_THRESHOLD_DARK) {
@@ -127,8 +127,8 @@ void reset_chaos_fractal_state(ChaosFractal *cf) {
         for (int x = 0; x < width; x++) {
             int idx = y * width + x;
 
-            cf->pendulums[idx].theta1 = phys_offset_x + (((double)x / width) * 2.0 * range - range);
-            cf->pendulums[idx].theta2 = phys_offset_y + (((double)y / height) * 2.0 * range - range);
+            cf->pendulums[idx].theta1 = phys_offset_x + (((double) x / width) * 2.0 * range - range);
+            cf->pendulums[idx].theta2 = phys_offset_y + (((double) y / height) * 2.0 * range - range);
 
             cf->pendulums[idx].omega1 = 0.0;
             cf->pendulums[idx].omega2 = 0.0;
@@ -217,4 +217,39 @@ void destroy_chaos_fractal(ChaosFractal *cf) {
     UnloadTexture(cf->texture);
     UnloadImage(cf->pixel_buffer);
     free(cf);
+}
+
+void export_chaos_fractal_image(ChaosFractal *cf) {
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    const char *filename = TextFormat("chaos_fractal_%04d%02d%02d_%02d%02d%02d.png", t->tm_year + 1900,
+                                      t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+
+    const int sw = GetScreenWidth();
+    const int sh = GetScreenHeight();
+    RenderTexture2D target = LoadRenderTexture(sw, sh);
+
+    BeginTextureMode(target);
+    ClearBackground(BLACK);
+    Texture2D tex = cf->texture;
+    float tiles = (cf->zoom < 1.0) ? (1.0 / cf->zoom) : 1.0;
+    float center_x = (cf->offset_x / (2.0 * PI)) * tex.width + (tex.width / 2.0);
+    float center_y = (cf->offset_y / (2.0 * PI)) * tex.height + (tex.height / 2.0);
+    float src_x = center_x - ((tex.width * tiles) / 2.0);
+    float src_y = center_y - ((tex.height * tiles) / 2.0);
+
+    Rectangle src = {src_x, src_y, (float) tex.width * tiles, (float) tex.height * tiles};
+    Rectangle dst = {0.0f, 0.0f, (float) sw, (float) sh};
+
+    DrawTexturePro(tex, src, dst, (Vector2){0, 0}, 0.0f, WHITE);
+    EndTextureMode();
+
+    Image img = LoadImageFromTexture(target.texture);
+    ImageFlipVertical(&img);
+
+    ExportImage(img, filename);
+    UnloadImage(img);
+    UnloadRenderTexture(target);
+
+    LOG_INFO("[SYS] Fractal image saved to root directory: %s", filename);
 }

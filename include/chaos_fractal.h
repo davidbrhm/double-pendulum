@@ -45,4 +45,6 @@ void evolve_chaos_map_mt(ChaosFractal *cf, int steps_per_frame);
 
 void destroy_chaos_fractal(ChaosFractal *cf);
 
+void export_chaos_fractal_image(ChaosFractal *cf);
+
 #endif //DOUBLE_PENDULUM_CHAOS_FRACTAL_H
